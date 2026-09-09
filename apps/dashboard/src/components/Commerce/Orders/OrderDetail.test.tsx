@@ -264,5 +264,31 @@ describe('OrderDetail', () => {
       expect(screen.getByRole('button', { name: copy.detail.printLabel })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: copy.detail.printInvoice })).toBeInTheDocument();
     });
+
+    /**
+     * Named explicitly (all other tests in this block reuse `base`, which already has
+     * `shop: null`, so this exact combination was already exercised implicitly -- but never
+     * asserted as a deliberate combination). `isDigital` (which disables the label button)
+     * comes only from `order.kind`, entirely independent of `order.shop`, so both "paths"
+     * being active together is not a special case in the source -- this test exists to make
+     * that explicit and to prove the invoice HTML itself (not just the button's disabled
+     * state) renders cleanly when both a null shop AND a digital kind apply at once.
+     */
+    it('handles order.shop === null and kind === "digital" together: label disabled, invoice still builds a clean document', () => {
+      renderDetail({ ...base, kind: 'digital', shop: null, receipts: [] }, null, null);
+
+      const labelButton = screen.getByRole('button', { name: copy.detail.printLabel });
+      expect(labelButton).toBeDisabled();
+
+      const invoiceButton = screen.getByRole('button', { name: copy.detail.printInvoice });
+      expect(invoiceButton).not.toBeDisabled();
+      fireEvent.click(invoiceButton);
+
+      expect(printDocument).toHaveBeenCalledTimes(1);
+      const html = vi.mocked(printDocument).mock.calls[0]?.[0] as string;
+      expect(html).toEqual(expect.any(String));
+      expect(html).not.toContain('undefined');
+      expect(html).not.toContain('>null<');
+    });
   });
 });

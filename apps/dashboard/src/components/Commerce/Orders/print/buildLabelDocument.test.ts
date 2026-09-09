@@ -121,4 +121,26 @@ describe('buildLabelDocument', () => {
     expect(html).not.toContain('<script>');
     expect(html).toContain('&lt;script&gt;');
   });
+
+  // Task 4 (Back repo) review flagged its own instagram-name-fallback test as only covering
+  // `name: null`, never `name: ''` -- both are real shapes the backend can send (the
+  // fallback-to-@username logic there only triggers on falsy `name`, and `''` is falsy too).
+  // This builder does not reimplement that fallback; it must render whatever string arrives,
+  // so the two falsy shapes have to reach an IDENTICAL printed result, not merely "neither
+  // literally prints the word null/undefined".
+  it('renders shop.instagramName === "" the same as shop.instagramName === null', () => {
+    const empty = { ...order, shop: { ...order.shop!, instagramName: '' } };
+    const nullName = { ...order, shop: { ...order.shop!, instagramName: null } };
+    const htmlEmpty = buildLabelDocument(empty, LABELS, 'یزد', 'یزد');
+    const htmlNull = buildLabelDocument(nullName, LABELS, 'یزد', 'یزد');
+
+    expect(htmlEmpty).not.toContain('null');
+    expect(htmlEmpty).not.toContain('undefined');
+    expect(htmlNull).not.toContain('null');
+    expect(htmlNull).not.toContain('undefined');
+
+    const senderLine = /فرستنده: <span>[^<]*<\/span>/;
+    expect(htmlEmpty.match(senderLine)?.[0]).toBe('فرستنده: <span></span>');
+    expect(htmlEmpty.match(senderLine)?.[0]).toBe(htmlNull.match(senderLine)?.[0]);
+  });
 });

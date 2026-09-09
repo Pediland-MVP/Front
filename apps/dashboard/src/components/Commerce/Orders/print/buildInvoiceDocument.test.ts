@@ -159,6 +159,38 @@ describe('buildInvoiceDocument', () => {
     expect(html).toContain('۳۵,۰۰۰');
   });
 
+  it('treats a compareAtPrice EQUAL to unitPrice as no discount -- only a STRICTLY higher compareAtPrice counts', () => {
+    // `hasDiscount = compareAtPrice != null && compareAtPrice > unitPrice` -- the existing
+    // fixture only ever exercises "greater than" (line 1) and "null" (line 2). Never "equal",
+    // which is a real shape a merchant can create (compareAtPrice set to the same value as the
+    // selling price) and takes the SAME `!hasDiscount` branch as null, but through a different
+    // condition (`>` being false rather than `!= null` being false) -- worth its own case.
+    const equalPrice = {
+      ...order,
+      lines: [{ ...order.lines[1], compareAtPrice: order.lines[1].unitPrice }], // 95_000 === 95_000
+    };
+    const html = buildInvoiceDocument(equalPrice, LABELS, WHEN, 'یزد', 'یزد');
+    const rowStart = html.indexOf('فیلتر یدک');
+    expect(rowStart).toBeGreaterThan(-1);
+    const row = html.slice(rowStart, rowStart + 400);
+    expect(row).toContain('۹۵,۰۰۰'); // unit price column
+    // Before-discount total AND after-discount total both read 95_000 * qty(2) = 190_000 --
+    // proving no discount was subtracted, not that the discount column happens to also show
+    // 190_000 by a different bug.
+    expect((row.match(/۱۹۰,۰۰۰/g) ?? []).length).toBe(2);
+    expect(row).toMatch(/<td class="num">۰<\/td>/); // discount column is exactly zero
+  });
+
+  it('renders an empty items table, not a crash, for an order with zero lines -- and still prints the stored totals', () => {
+    const noLines = { ...order, lines: [] };
+    const html = buildInvoiceDocument(noLines, LABELS, WHEN, 'یزد', 'یزد');
+    expect(html).toContain('<tbody></tbody>');
+    // Totals are read from order.itemsTotal/grandTotal directly (see the "reads totals
+    // directly..." test above) -- an empty lines array must not zero these out.
+    expect(html).toContain('۷۰۰,۰۰۰');
+    expect(html).toContain('۷۶۰,۰۰۰');
+  });
+
   it('escapes HTML in a product title', () => {
     const nasty = {
       ...order,
@@ -198,5 +230,27 @@ describe('buildInvoiceDocument', () => {
     expect(html).toContain('فروشنده');
     expect(html).not.toContain('undefined');
     expect(html).not.toContain('null');
+  });
+
+  // Same Task 4 (Back repo) concern as buildLabelDocument.test.ts's equivalent case: the
+  // backend's own instagram-name-fallback test only covers `name: null`, never `name: ''`.
+  // This builder must render both falsy shapes identically since it does not reimplement the
+  // fallback itself.
+  it('renders shop.instagramName === "" the same as shop.instagramName === null', () => {
+    const empty = { ...order, shop: { ...order.shop!, instagramName: '' } };
+    const nullName = { ...order, shop: { ...order.shop!, instagramName: null } };
+    const htmlEmpty = buildInvoiceDocument(empty, LABELS, WHEN, 'یزد', 'یزد');
+    const htmlNull = buildInvoiceDocument(nullName, LABELS, WHEN, 'یزد', 'یزد');
+
+    expect(htmlEmpty).not.toContain('null');
+    expect(htmlEmpty).not.toContain('undefined');
+    expect(htmlNull).not.toContain('null');
+    expect(htmlNull).not.toContain('undefined');
+
+    const coTxt = /<div class="co-txt"><b>[^<]*<\/b><span>@[^<]*<\/span><\/div>/;
+    expect(htmlEmpty.match(coTxt)?.[0]).toBe(
+      '<div class="co-txt"><b></b><span>@tokita.shop</span></div>',
+    );
+    expect(htmlEmpty.match(coTxt)?.[0]).toBe(htmlNull.match(coTxt)?.[0]);
   });
 });
