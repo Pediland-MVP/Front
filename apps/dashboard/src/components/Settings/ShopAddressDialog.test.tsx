@@ -13,7 +13,8 @@ vi.mock('@/hooks/swr/api-client', () => ({
   default: { put: (...args: unknown[]) => putMock(...args) },
 }));
 
-vi.mock('swr', () => ({ mutate: vi.fn() }));
+const mutateMock = vi.fn();
+vi.mock('swr', () => ({ mutate: (...args: unknown[]) => mutateMock(...args) }));
 
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 
@@ -86,7 +87,10 @@ const rerenderDialog = (
 describe('ShopAddressDialog', () => {
   beforeEach(() => {
     swrResponses = {};
-    putMock.mockReset().mockResolvedValue({});
+    putMock.mockReset().mockResolvedValue({
+      data: { message: 'Updated', statusCode: 200, code: 'SHOP_ADDRESS_UPDATED', data: null },
+    });
+    mutateMock.mockReset();
     vi.mocked(toast.success).mockClear();
     vi.mocked(toast.error).mockClear();
   });
@@ -177,6 +181,44 @@ describe('ShopAddressDialog', () => {
       expect(putMock).toHaveBeenCalledWith('/instagram/ig-a/shopAddress', expect.any(Object)),
     );
     await waitFor(() => expect(toast.success).toHaveBeenCalledWith(copy.saved));
+  });
+
+  it('writes the PUT response straight into the SWR cache (revalidate: false) and closes without waiting on a re-fetch', async () => {
+    // The saved row PUT returns, INCLUDING resolved city/province — the backend re-reads
+    // with relations after saving so this is already GET-shaped. There must be no extra
+    // network round trip (`mutate(key)` with no data, SWR's revalidate-then-refetch form)
+    // gating the dialog's close.
+    const savedRow = {
+      id: 'sa-a',
+      address: 'آدرس جدید',
+      postalcode: '1111111111',
+      phone: '09111111111',
+      shippingMethod: 'پست',
+      city: { id: 5, name: 'شهر', province: { id: 1, name: 'استان' } },
+    };
+    putMock.mockResolvedValue({
+      data: { message: 'Updated', statusCode: 200, code: 'SHOP_ADDRESS_UPDATED', data: savedRow },
+    });
+    mockShopAddress('ig-a', null);
+    const onOpenChange = vi.fn();
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <ShopAddressDialog instagramId="ig-a" open onOpenChange={onOpenChange} canManage />
+      </NextIntlClientProvider>,
+    );
+
+    await waitFor(() => expect(screen.getByLabelText(copy.address)).toHaveValue(''));
+
+    screen.getByText(copy.save).closest('button')!.click();
+
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false));
+    // The cache write is local (`revalidate: false`) using the PUT response's own data,
+    // not a bare `mutate(key)` (which would trigger a real GET).
+    expect(mutateMock).toHaveBeenCalledWith(
+      '/instagram/ig-a/shopAddress',
+      { message: 'Updated', statusCode: 200, code: 'SHOP_ADDRESS_UPDATED', data: savedRow },
+      { revalidate: false },
+    );
   });
 
   it('shows the translated error message for a coded save failure', async () => {

@@ -112,16 +112,23 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
     setIsSubmitting(true);
 
     await api
-      .put(`/instagram/${instagramId}/shopAddress`, {
+      .put<IResponseMessage<IShopAddress>>(`/instagram/${instagramId}/shopAddress`, {
         cityId: values.cityId ? +values.cityId : undefined,
         address: values.address || undefined,
         postalcode: values.postalcode || undefined,
         phone: values.phone || undefined,
         shippingMethod: values.shippingMethod || undefined,
       })
-      .then(async () => {
+      .then((response) => {
         toast.success(t('saved'));
-        await mutate(key);
+        // The PUT response is already the saved row WITH city/province resolved — the
+        // backend re-reads with relations after saving specifically so this and a GET
+        // return the same shape. Write it into the cache directly with
+        // `revalidate: false` instead of `mutate(key)`'s default (revalidate-then-
+        // refetch, a real extra GET): that extra round trip was both unnecessary and,
+        // because it was awaited before `onOpenChange(false)`, delayed the dialog's
+        // close for no reason.
+        mutate(key, response.data, { revalidate: false });
         onOpenChange(false);
       })
       .catch((error: any) => {
