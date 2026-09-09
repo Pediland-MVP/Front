@@ -18,7 +18,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CopyIcon } from '@phosphor-icons/react/dist/ssr/Copy';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
-import { Plug2Icon, Trash2Icon } from 'lucide-react';
+import { MapPinIcon, Plug2Icon, Trash2Icon } from 'lucide-react';
 import { LoaderSpin } from '../ui-custom/LoaderSpin';
 import { DeleteConfirmationDialog } from '../Global/DeleteConfirmationDialog';
 
@@ -26,6 +26,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { PagePromotionAlert } from './PagePromotionAlert';
 import { PageCoverageBadge } from './PageCoverageBadge';
 import { InstagramReconnectDialog } from './InstagramReconnectDialog';
+import { ShopAddressDialog } from './ShopAddressDialog';
 
 const MAX_INSTAGRAM_ACCOUNTS = 5;
 const API_URL = process.env.NEXT_PUBLIC_BACK_API_URL;
@@ -49,6 +50,7 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [imgErrors, setImgErrors] = useState<Record<string, boolean>>({});
   const [reconnectTarget, setReconnectTarget] = useState<InstagramNamespace.Account | null>(null);
+  const [shopAddressTarget, setShopAddressTarget] = useState<string | null>(null);
 
   const canView = can('instagram:view');
   const canManage = can('instagram:manage');
@@ -252,6 +254,22 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
               </Button>
 
               <Button
+                className="text-muted-foreground hover:text-secondary h-10 w-full flex-1 rounded-none border-s border-gray-100 hover:bg-blue-50"
+                variant="ghost"
+                type="button"
+                size="sm"
+                // Not gated on canManage: instagram:view must still be able to OPEN this
+                // dialog to read the sender address — a disabled native <button> never
+                // fires onClick, so gating here would make it unopenable, not read-only.
+                // ShopAddressDialog itself disables every field and the save button for
+                // a non-canManage user, which is where the actual read-only gate belongs.
+                onClick={() => setShopAddressTarget(instagram.id)}
+              >
+                <MapPinIcon className="text-secondary" />
+                {t('shopAddress')}
+              </Button>
+
+              <Button
                 className="text-muted-foreground hover:text-destructive h-10 w-full flex-1 rounded-none border-s border-gray-100 hover:bg-rose-50"
                 variant="ghost"
                 type="button"
@@ -272,6 +290,15 @@ export const InstagramAccounts = ({ onCountChange }: InstagramAccountsProps) => 
         onOpenChange={(open) => {
           if (!open) setReconnectTarget(null);
         }}
+      />
+
+      <ShopAddressDialog
+        instagramId={shopAddressTarget}
+        open={shopAddressTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setShopAddressTarget(null);
+        }}
+        canManage={canManage}
       />
     </>
   );
