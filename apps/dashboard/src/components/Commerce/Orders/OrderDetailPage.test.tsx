@@ -72,6 +72,7 @@ const order: OrderDetailView = {
   paidAt: null,
   createDate: '2026-09-02T10:00:00.000Z',
   receipts: [],
+  shop: null,
 };
 
 // Opens the Radix combobox and clicks the named option, then submits. `userEvent` is not a

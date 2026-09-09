@@ -61,6 +61,7 @@ const base: OrderDetailView = {
   paidAt: null,
   createDate: '2026-09-02T10:00:00.000Z',
   receipts: [],
+  shop: null,
 };
 
 const renderDetail = (order: OrderDetailView, cityName: string | null) => {

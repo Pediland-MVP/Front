@@ -25,6 +25,18 @@ export type CommerceOrderCancelReason =
 
 export type CommerceProductKind = 'physical' | 'digital';
 
+export interface OrderShopView {
+  instagramName: string | null;
+  instagramUsername: string | null;
+  profilePictureUrl: string | null;
+  address: string | null;
+  postalcode: string | null;
+  phone: string | null;
+  shippingMethod: string | null;
+  cityName: string | null;
+  provinceName: string | null;
+}
+
 export interface ViewLine {
   variantId: string;
   productId: string;
@@ -100,6 +112,7 @@ export interface OrderReceiptView {
 /** Only `GET /commerce/orders/:id` returns receipts. The list never does. */
 export interface OrderDetailView extends OrderView {
   receipts: OrderReceiptView[];
+  shop: OrderShopView | null;
 }
 
 export interface OrdersFilters {
