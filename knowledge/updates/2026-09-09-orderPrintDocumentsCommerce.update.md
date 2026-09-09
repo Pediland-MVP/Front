@@ -1,8 +1,9 @@
 # Order print documents (shipping label / invoice), commerce-module version — 2026-09-09
 
-Front half of `Back/knowledge/updates/2026-09-09-orderPrintDocumentsCommerce.update.md`, which
-carries the `ShopAddress` entity, the two `/instagram/:instagramID/shopAddress` endpoints, and the
-new `shop` block on `GET /commerce/orders/:id` — read that one first, this side is built on it.
+Front half of `Back/knowledge/updates/2026-09-09-orderPrintDocumentsCommerce.update.md` (Back
+commits `a4e996e0`..`b6a7cde7` on `feat/commerce-product-core`, already shipped), which carries the
+`ShopAddress` entity, the two `/instagram/:instagramID/shopAddress` endpoints, and the new `shop`
+block on `GET /commerce/orders/:id` — read that one first, this side is built on it.
 
 API contract rows updated in [`knowledge/front-back-relations.md`](../front-back-relations.md).
 
