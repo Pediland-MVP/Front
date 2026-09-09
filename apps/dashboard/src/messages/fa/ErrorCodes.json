@@ -90,6 +90,7 @@
     "REMINDER_TIME_REQUIRED": "زمان یادآوری الزامی است",
     "SERVER_CONNECTION_ERROR": "اتصال با سرور برقرار نشد",
     "SHIPPING_COST_IS_NOT_ALLOWED_FOR_DIGITAL_PRODUCTS": "هزینه ارسال برای محصولات دیجیتال مجاز نیست",
+    "SHOP_ADDRESS_INVALID_CITY": "شهر انتخاب‌شده معتبر نیست. لطفاً دوباره یک شهر انتخاب کنید.",
     "SHOP_NOT_FOUND": "فروشگاه پیدا نشد",
     "SUBSCRIPTION_ALREADY_PAID": "این اشتراک قبلا پرداخت شده است",
     "SUBSCRIPTION_ALREADY_BOUND": "اشتراک فعال شما برای پیج دیگری استفاده شده است. برای این پیج یک پلن جدید بخرید.",
