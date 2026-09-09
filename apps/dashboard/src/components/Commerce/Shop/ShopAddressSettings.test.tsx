@@ -110,7 +110,6 @@ describe('ShopAddressSettings', () => {
       address: 'خیابان آزادی، پلاک ۱',
       postalcode: '1111111111',
       phone: '09111111111',
-      shippingMethod: 'پست',
       city: { id: 5, name: 'شهر آ', province: { id: 1, name: 'استان آ' } },
     };
     renderScreen();
@@ -133,7 +132,6 @@ describe('ShopAddressSettings', () => {
       address: 'آدرس',
       postalcode: '1111111111',
       phone: '09111111111',
-      shippingMethod: null,
       city: { id: 5, name: 'شهر آ', province: { id: 1, name: 'استان آ' } },
     };
     renderScreen();
@@ -153,7 +151,7 @@ describe('ShopAddressSettings', () => {
   });
 
   it('disables every field, not just the save button, when the user cannot manage orders', async () => {
-    addressData = { address: 'a', postalcode: null, phone: null, shippingMethod: null, city: null };
+    addressData = { address: 'a', postalcode: null, phone: null, city: null };
     canManage = false;
     renderScreen();
 
@@ -172,7 +170,6 @@ describe('ShopAddressSettings', () => {
       address: 'a',
       postalcode: null,
       phone: null,
-      shippingMethod: null,
       city: { id: 5, name: 'شهر آ', province: { id: 1, name: 'استان آ' } },
     };
     renderScreen();
@@ -202,7 +199,6 @@ describe('ShopAddressSettings', () => {
       address: 'آدرس جدید',
       postalcode: '1111111111',
       phone: '09111111111',
-      shippingMethod: 'پست',
       city: { id: 5, name: 'شهر', province: { id: 1, name: 'استان' } },
     };
     const responseBody = {

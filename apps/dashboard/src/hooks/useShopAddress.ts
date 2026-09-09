@@ -21,7 +21,6 @@ export function useShopAddress() {
     address?: string;
     postalcode?: string;
     phone?: string;
-    shippingMethod?: string;
     cityId?: number;
   }) => api.put<IResponseMessage<IShopAddress>>(shopAddressKey, payload);
 

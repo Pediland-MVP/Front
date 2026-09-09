@@ -76,9 +76,11 @@ export function buildLabelDocument(
   // the non-parsing `&#۳۹;`. `esc(toPersianDigits(...))` never re-touches its own escaped output.
   const digits = (v: unknown) => (v ? esc(toPersianDigits(String(v))) : '');
 
-  // Print the ACTUAL shipping method this order was placed with, falling back to the
-  // shop's configured default only when the order itself carries none.
-  const shippingMethod = order.shippingTitle ?? shop?.shippingMethod ?? null;
+  // The ACTUAL shipping method this order was placed with -- there is no shop-level default to
+  // fall back to: `order.shippingTitle` is a snapshot of the buyer's chosen `CommerceShippingOption`
+  // and can never disagree with what the order itself charged for, unlike a separately-configured
+  // shop setting.
+  const shippingMethod = order.shippingTitle ?? null;
 
   const body = `
 <div class="lbl">

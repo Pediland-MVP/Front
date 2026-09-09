@@ -102,7 +102,6 @@ const order: OrderDetailView = {
     address: 'میدان ونک',
     postalcode: '1435894511',
     phone: '02128423842',
-    shippingMethod: 'پست پیشتاز',
     cityName: 'تهران',
     provinceName: 'تهران',
   },
@@ -232,9 +231,14 @@ describe('buildInvoiceDocument', () => {
     expect(html).toContain('zarinpal');
   });
 
-  it('falls back to "پست" for the shipping method when both shippingTitle and the shop default are missing', () => {
-    const bothMissing = { ...order, shippingTitle: null, shop: null };
-    const html = buildInvoiceDocument(bothMissing, LABELS, WHEN, 'یزد', 'یزد');
+  it('prints order.shippingTitle as the shipping method', () => {
+    const html = buildInvoiceDocument(order, LABELS, WHEN, 'یزد', 'یزد');
+    expect(html).toContain('روش ارسال</b>پست پیشتاز');
+  });
+
+  it('falls back to "پست" for the shipping method when shippingTitle is missing', () => {
+    const noTitle = { ...order, shippingTitle: null };
+    const html = buildInvoiceDocument(noTitle, LABELS, WHEN, 'یزد', 'یزد');
     expect(html).toContain('روش ارسال</b>پست');
   });
 

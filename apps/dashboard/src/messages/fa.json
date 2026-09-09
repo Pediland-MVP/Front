@@ -1596,8 +1596,6 @@
       "address": "آدرس",
       "postalCode": "کدپستی",
       "phone": "تلفن",
-      "shippingMethod": "روش ارسال",
-      "shippingMethodPlaceholder": "پست",
       "save": "ذخیره",
       "saved": "آدرس فرستنده ذخیره شد",
       "postalcodeInvalid": "کدپستی باید ۱۰ رقم باشد",

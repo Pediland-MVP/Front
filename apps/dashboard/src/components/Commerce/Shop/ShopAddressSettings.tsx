@@ -36,7 +36,6 @@ const schema = z.object({
     .optional()
     .or(z.literal('')),
   phone: z.string().max(20).optional(),
-  shippingMethod: z.string().max(50).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -83,7 +82,6 @@ export function ShopAddressSettings() {
       address: address?.address ?? '',
       postalcode: address?.postalcode ?? '',
       phone: address?.phone ?? '',
-      shippingMethod: address?.shippingMethod ?? '',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, address]);
@@ -94,7 +92,6 @@ export function ShopAddressSettings() {
       address: values.address || undefined,
       postalcode: values.postalcode || undefined,
       phone: values.phone || undefined,
-      shippingMethod: values.shippingMethod || undefined,
     })
       .then((response) => {
         toast.success(t('saved'));
@@ -233,24 +230,6 @@ export function ShopAddressSettings() {
                   type="text"
                   inputMode="numeric"
                   onInput={onInputP2EHandler}
-                  disabled={!canManage}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="shippingMethod"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <FormLabel>{t('shippingMethod')}</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder={t('shippingMethodPlaceholder')}
                   disabled={!canManage}
                   {...field}
                 />

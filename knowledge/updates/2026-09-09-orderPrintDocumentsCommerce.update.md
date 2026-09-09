@@ -177,3 +177,19 @@ builders (`buildLabelDocument`/`buildInvoiceDocument`) are UNCHANGED:**
   accepted `zodResolver` error moved to `ShopAddressSettings.tsx` (same error class, same file
   count as before, not a new one).
 - **Still not clicked through in a browser** — same known gap as the original cut.
+
+## 2026-09-09 (later still) — `shippingMethod` removed from the shop address form
+
+Back side: `Back/knowledge/updates/2026-09-09-orderPrintDocumentsCommerce.update.md`'s matching
+follow-up section. The شیوه‌ی ارسال field on the `/products/shop` form was a shop-level default
+that could only ever disagree with the buyer's actually-chosen shipping method
+(`order.shippingTitle`, already on `OrderDetailView` directly). Removed from `IShopAddress`,
+`useShopAddress`'s save payload, `ShopAddressSettings.tsx`'s form (field + zod schema), and
+`OrderShopView`. The print builders (`buildLabelDocument`/`buildInvoiceDocument`) now derive the
+printed method purely from `order.shippingTitle ?? t['defaultShippingMethod']`, no shop-level
+fallback in between — same printed LABEL text (`Settings.ShopAddress` no longer carries a
+`shippingMethod`/`shippingMethodPlaceholder` key; the separate `Commerce.Orders.Print.shippingMethod`
+key, the printed word itself, is untouched). Verified:
+`pnpm exec vitest run src/components/Commerce/Shop src/components/Commerce/Orders/print` all
+passing (buildInvoiceDocument gained one test: it previously had no case asserting
+`order.shippingTitle` alone drives the printed method, only the "both missing" fallback).

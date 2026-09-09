@@ -139,9 +139,11 @@ export function buildInvoiceDocument(
 
   const trackingCode = order.followUpCode && order.followUpCode.trim() ? order.followUpCode : null;
 
-  // Print the ACTUAL shipping method this order was placed with, falling back to the
-  // shop's configured default only when the order itself carries none.
-  const shippingMethod = order.shippingTitle ?? shop?.shippingMethod ?? null;
+  // The ACTUAL shipping method this order was placed with -- there is no shop-level default to
+  // fall back to: `order.shippingTitle` is a snapshot of the buyer's chosen `CommerceShippingOption`
+  // and can never disagree with what the order itself charged for, unlike a separately-configured
+  // shop setting.
+  const shippingMethod = order.shippingTitle ?? null;
   const paymentLabel = paymentMethodLabel(order, t);
 
   const body = `

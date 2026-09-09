@@ -49,7 +49,6 @@ const order: OrderDetailView = {
     address: 'میدان ونک، برزیل شرقی، پلاک ۱۰۴',
     postalcode: '1435894511',
     phone: '02128423842',
-    shippingMethod: 'پست پیشتاز',
     cityName: 'تهران',
     provinceName: 'تهران',
   },
@@ -90,14 +89,8 @@ describe('buildLabelDocument', () => {
     expect(buildLabelDocument(order, LABELS, 'یزد', 'یزد')).toContain('BF-9C4A21E7');
   });
 
-  it('prefers order.shippingTitle over the shop default for the printed shipping method', () => {
+  it('prints order.shippingTitle as the shipping method', () => {
     const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
-    expect(html).toContain('روش ارسال:&nbsp;</span> پست پیشتاز');
-  });
-
-  it('falls back to the shop default shipping method when shippingTitle is null', () => {
-    const noTitle = { ...order, shippingTitle: null };
-    const html = buildLabelDocument(noTitle, LABELS, 'یزد', 'یزد');
     expect(html).toContain('روش ارسال:&nbsp;</span> پست پیشتاز');
   });
 
@@ -125,9 +118,9 @@ describe('buildLabelDocument', () => {
     expect(html).not.toContain('null');
   });
 
-  it('falls back to the "defaultShippingMethod" label when neither shippingTitle nor the shop default exist', () => {
-    const bothMissing = { ...order, shippingTitle: null, shop: null };
-    const html = buildLabelDocument(bothMissing, LABELS, 'یزد', 'یزد');
+  it('falls back to the "defaultShippingMethod" label when shippingTitle is null', () => {
+    const noTitle = { ...order, shippingTitle: null };
+    const html = buildLabelDocument(noTitle, LABELS, 'یزد', 'یزد');
     expect(html).toContain('روش ارسال:&nbsp;</span> پست');
   });
 

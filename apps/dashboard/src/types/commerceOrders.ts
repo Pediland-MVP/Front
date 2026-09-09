@@ -32,7 +32,6 @@ export interface OrderShopView {
   address: string | null;
   postalcode: string | null;
   phone: string | null;
-  shippingMethod: string | null;
   cityName: string | null;
   provinceName: string | null;
 }
