@@ -9,7 +9,6 @@ vi.mock('next-intl', () => ({
       credit: 'اعـتـبـار',
       days: 'روز',
       day: 'روز',
-      message: 'پیام',
       automation: 'اتوماسیون رایگان',
       automation_line1: 'اتوماسیون',
       automation_line2: 'رایگان',
@@ -33,13 +32,6 @@ describe('ProgressRadial', () => {
 
     expect(screen.getByText('اعـتـبـار')).toBeInTheDocument();
     expect(screen.getByText('15 روز')).toBeInTheDocument();
-  });
-
-  it('renders message credit count when type is credit', () => {
-    render(<ProgressRadial percentage={300} type="credit" size={95} strokeWidth={9} />);
-
-    expect(screen.getByText('اعـتـبـار')).toBeInTheDocument();
-    expect(screen.getByText('300 پیام')).toBeInTheDocument();
   });
 
   it('keeps the ring gradient and shows the raw count when under the free automation limit', () => {

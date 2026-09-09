@@ -45,7 +45,6 @@ const sub = (over: Partial<Record<string, unknown>> = {}) =>
   ({
     id: 'sub1',
     status: SubscriptionStatusEnum.ACTIVE,
-    type: 'time',
     instagramId: null,
     planDuration: { name: 'شش ماهه', plan: { name: '۱K تا ۲۵K فالوور' } },
     ...over,
@@ -155,15 +154,6 @@ describe('ConnectPage — unbound plan opens the dialog', () => {
     expect(screen.getByText(messages.Connect.setup_second_instagram_cta)).toBeInTheDocument();
     // The lone connect button is what trapped the user in the retry loop.
     expect(screen.queryByText(messages.Connect.connect_account)).not.toBeInTheDocument();
-  });
-
-  it('keeps the plain connect link when the only coverage is credit, which can never mismatch', () => {
-    withSlot();
-    useSubscriptionStoreMock.mockReturnValue({ subscriptions: [sub({ type: 'credit' })] });
-
-    renderPage();
-
-    expect(screen.getByText(messages.Connect.connect_account)).toBeInTheDocument();
   });
 
   it('ignores a plan already bound to a page', () => {

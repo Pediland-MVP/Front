@@ -77,7 +77,6 @@ const sub = (over: Partial<Record<string, unknown>> = {}) =>
   ({
     id: 'sub1',
     status: SubscriptionStatusEnum.ACTIVE,
-    type: 'time',
     instagramId: null,
     planDuration: { name: 'شش ماهه', plan: { name: '۱K تا ۲۵K فالور' } },
     ...over,
@@ -584,20 +583,6 @@ describe('SetupInstagramDialog — unbound plan step', () => {
 
     renderDialog();
     fireEvent.click(screen.getByText(messages.SetupInstagramDialog.buy_another_plan));
-
-    expect(
-      screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),
-    ).toBeInTheDocument();
-    expect(warningTitle()).not.toBeInTheDocument();
-  });
-
-  it('skips the step entirely for credit coverage, which can never mismatch', () => {
-    subscriptionStoreMock.mockReturnValue({
-      setActive: vi.fn(),
-      subscriptions: [sub({ type: 'credit' })],
-    });
-
-    renderDialog();
 
     expect(
       screen.getByPlaceholderText(messages.SetupInstagramDialog.username_placeholder),

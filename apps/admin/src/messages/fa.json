@@ -542,9 +542,6 @@
   "Plans": {
     "name": "نام",
     "description": "توضیحات",
-    "type": "نوع",
-    "type_credit": "اعتباری",
-    "type_time": "زمانی",
     "followersRange": "بازه دنبال‌کننده",
     "minFollowers": "حداقل دنبال‌کننده",
     "maxFollowers": "حداکثر دنبال‌کننده",
@@ -560,7 +557,6 @@
     "price": "قیمت",
     "monthlyDiscount": "تخفیف ماهانه",
     "durationDays": "تعداد روز",
-    "credit": "اعتبار",
     "save": "ذخیره",
     "saving": "در حال ذخیره...",
     "cancel": "انصراف",

@@ -23,15 +23,6 @@ export function usePlanColumns({
       cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
     },
     {
-      accessorKey: 'type',
-      header: t('type'),
-      cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.original.type === 'credit' ? t('type_credit') : t('type_time')}
-        </Badge>
-      ),
-    },
-    {
       id: 'followers',
       header: t('followersRange'),
       cell: ({ row }) => (

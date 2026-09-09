@@ -17,8 +17,6 @@ import {
 import { useSidebar } from '@/components/ui/sidebar';
 import { Spinner } from '@/components/ui/spinner';
 import { CrownIcon, LogOutIcon, UserRoundPenIcon } from 'lucide-react';
-import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { useIsWebView } from '@/hooks/useIsWebView';
 
 interface UserDropdownMenuProps {
@@ -32,8 +30,6 @@ export const UserDropdownMenu = ({ children, size = 'md' }: UserDropdownMenuProp
   const [isLogoutLoading, setIsLogoutLoading] = useState<boolean>(false);
   const logout = useLogout();
   const isWebView = useIsWebView();
-
-  const { subscriptions } = useSubscriptionStore();
 
   const t = useTranslations('Console.Sidebar');
 
@@ -69,7 +65,7 @@ export const UserDropdownMenu = ({ children, size = 'md' }: UserDropdownMenuProp
         align="start"
         sideOffset={4}
       >
-        {!isWebView && !hasOnlyFreeCredit(subscriptions) && (
+        {!isWebView && (
           <>
             <DropdownMenuGroup>
               <DropdownMenuItem

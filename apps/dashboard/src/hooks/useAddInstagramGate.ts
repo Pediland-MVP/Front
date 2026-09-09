@@ -32,10 +32,6 @@ export const AUTO_OPEN_ADD_PARAM = 'openAdd';
  *   leaving the user with a toast and no way to act on it. So show the plan first and let
  *   them choose: continue with it, or buy one that fits.
  *
- * `getUnboundActiveSubscriptions` excludes credit by design, which is right: credit
- * coverage is workspace-wide and follower-count-blind, so it can never mismatch and needs
- * no decision — it goes straight to OAuth.
- *
  * @param hasInstagram Whether the workspace already has at least one connected account.
  *   Callers source this differently (`/connect` from `useUser`, settings from the accounts
  *   list), so it stays a parameter. The first account is never gated.

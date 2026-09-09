@@ -128,8 +128,6 @@ export const WorkspaceDrawerContent = ({ onClose, isDialog }: WorkspaceDrawerCon
                           <span className="text-xs text-gray-500">
                             {t('daysLeft', { count: instagram.subscriptionDaysLeft })}
                           </span>
-                        ) : !isWebView && ws.hasCreditCoverage ? (
-                          <span className="text-xs text-gray-500">{t('coveredByCredit')}</span>
                         ) : !isWebView && instagram.hasReservedSubscription ? (
                           <span className="text-xs text-gray-500">{t('pendingActivation')}</span>
                         ) : null}

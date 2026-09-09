@@ -22,13 +22,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import api from '@/hooks/swr/api-client';
 import { formatNumber } from '@/lib/formatNumber';
 import { onInputP2EHandler } from '@/lib/p2eNumber';
@@ -39,7 +32,6 @@ import { usePlanColumns } from './columns';
 const PlanSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  type: z.enum(['credit', 'time']),
   minFollowers: z.number().min(0),
   maxFollowers: z.number().min(0),
   features: z.string(),
@@ -52,7 +44,6 @@ const DurationSchema = z.object({
   price: z.number().min(0),
   monthlyDiscount: z.number().min(0).optional(),
   durationDays: z.number().nullable().optional(),
-  credit: z.number().nullable().optional(),
 });
 
 type PlanValues = z.infer<typeof PlanSchema>;
@@ -92,7 +83,6 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
     planForm.reset({
       name: plan.name,
       description: plan.description,
-      type: plan.type === 'credit' ? 'credit' : 'time',
       minFollowers: plan.minFollowers,
       maxFollowers: plan.maxFollowers,
       features: (plan.features ?? []).join('\n'),
@@ -108,7 +98,6 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
       price: duration.price,
       monthlyDiscount: duration.monthlyDiscount ?? undefined,
       durationDays: duration.durationDays ?? null,
-      credit: duration.credit ?? null,
     });
   };
 
@@ -123,7 +112,6 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
       await api.patch(`/plans/${editTarget.id}`, {
         name: data.name,
         description: data.description,
-        type: data.type,
         minFollowers: data.minFollowers,
         maxFollowers: data.maxFollowers,
         features,
@@ -150,7 +138,6 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
         price: data.price,
         monthlyDiscount: data.monthlyDiscount,
         durationDays: data.durationDays ?? null,
-        credit: data.credit ?? null,
       });
       toast.success(t('durationUpdateSuccess'));
       setEditDuration(null);
@@ -212,28 +199,6 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={planForm.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t('type')}</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="time">{t('type_time')}</SelectItem>
-                          <SelectItem value="credit">{t('type_credit')}</SelectItem>
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -463,58 +428,31 @@ export default function PlansTable({ isRefetching, plans, mutate }: PlansTablePr
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-3">
-                  <FormField
-                    control={durationForm.control}
-                    name="durationDays"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('durationDays')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            inputMode="numeric"
-                            onInput={onInputP2EHandler}
-                            onFocus={onFocus}
-                            value={
-                              field.value === undefined || field.value === null
-                                ? ''
-                                : formatNumber(field.value)
-                            }
-                            onChange={(e) =>
-                              field.onChange(e.target.value === '' ? null : +e.target.value)
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={durationForm.control}
-                    name="credit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t('credit')}</FormLabel>
-                        <FormControl>
-                          <Input
-                            inputMode="numeric"
-                            onInput={onInputP2EHandler}
-                            onFocus={onFocus}
-                            value={
-                              field.value === undefined || field.value === null
-                                ? ''
-                                : formatNumber(field.value)
-                            }
-                            onChange={(e) =>
-                              field.onChange(e.target.value === '' ? null : +e.target.value)
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                <FormField
+                  control={durationForm.control}
+                  name="durationDays"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('durationDays')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          inputMode="numeric"
+                          onInput={onInputP2EHandler}
+                          onFocus={onFocus}
+                          value={
+                            field.value === undefined || field.value === null
+                              ? ''
+                              : formatNumber(field.value)
+                          }
+                          onChange={(e) =>
+                            field.onChange(e.target.value === '' ? null : +e.target.value)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" onClick={() => setEditDuration(null)}>

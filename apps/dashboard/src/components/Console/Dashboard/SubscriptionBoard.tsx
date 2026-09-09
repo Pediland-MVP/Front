@@ -10,7 +10,6 @@ import { useEffect, useMemo, useState } from 'react';
 // TODO: Should Refactor
 import { useSubscriptionStore } from '@/store/subscriptionStore';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
-import { hasOnlyFreeCredit } from '@/utils/subscription';
 import { useIsWebView } from '@/hooks/useIsWebView';
 
 import { Alert, AlertTitle } from '@/components/ui/alert';
@@ -82,11 +81,6 @@ export const SubscriptionBoard = () => {
     (sub) => sub.status === SubscriptionStatusEnum.RESERVED,
   );
 
-  const expiredSubscription = subscriptions?.find(
-    (sub) => sub.status === SubscriptionStatusEnum.EXPIRED,
-  );
-
-  const currentSubscription = activeSubscription || expiredSubscription;
   // A RESERVED sub is already paid for and queued to activate — the user is NOT on a free
   // trial just because nothing is ACTIVE yet. The automation-count radial must only show
   // when the user genuinely has no subscription at all.
@@ -115,12 +109,6 @@ export const SubscriptionBoard = () => {
 
   if (isSubscriptionsLoading) return <SubscriptionBoardSkeleton />;
 
-  if (hasOnlyFreeCredit(subscriptions)) return null;
-
-  // WebView never shows credit-type info, even mixed with a paid sub — but the rest of the board
-  // (Instagram connection list, paid remaining days) must still render, so this only affects the radial.
-  const showCreditRadial = !isWebView && currentSubscription?.type === 'credit';
-
   return (
     <CardSimple>
       <CardContent className="p-3 md:p-5">
@@ -128,16 +116,10 @@ export const SubscriptionBoard = () => {
           <div className="flex w-full items-center gap-3 md:gap-5">
             <div>
               <ProgressRadial
-                percentage={
-                  !hasSubscription
-                    ? totalAutomationCount
-                    : showCreditRadial
-                      ? (currentSubscription?.credit ?? 0)
-                      : totalRemainingDays
-                }
+                percentage={!hasSubscription ? totalAutomationCount : totalRemainingDays}
                 size={isMobile ? 85 : 95}
                 strokeWidth={isMobile ? 8 : 9}
-                type={!hasSubscription ? 'automation' : showCreditRadial ? 'credit' : 'days'}
+                type={!hasSubscription ? 'automation' : 'days'}
                 totalDays={totalPurchasedDays}
                 total={freeAutomationLimit}
               />
@@ -186,48 +168,6 @@ export const SubscriptionBoard = () => {
                   </div>
                 ))}
               </div>
-
-              {/* <div className="flex items-center gap-1">
-                <span className="text-muted-foreground">نوع اشتراک:</span>
-                <span
-                  className={cn(
-                    "font-medium",
-                    !hasActiveSubscription && "text-muted-foreground",
-                  )}
-                >
-                  {isSubscriptionsLoading ? (
-                    <LoaderPulse />
-                  ) : currentSubscription?.type === "credit" ? (
-                    "رایـگـان"
-                  ) : (
-                    currentSubscription?.planDuration?.name
-                  )}
-                </span>
-
-                <div className="flex items-center gap-1">
-                  {isSubscriptionsLoading ? (
-                    <LoaderPulse />
-                  ) : hasActiveSubscription ? (
-                    <div className="flex items-center gap-1 text-green-600">
-                      <CircleIcon
-                        size={10}
-                        weight="fill"
-                        className={cn("animate-pulse")}
-                      />
-                      فعال
-                    </div>
-                  ) : (
-                    <div className="text-destructive flex items-center gap-1">
-                      <CircleIcon
-                        size={10}
-                        weight="fill"
-                        className={cn("animate-pulse")}
-                      />
-                      غیرفعال
-                    </div>
-                  )}
-                </div>
-              </div> */}
             </div>
           </div>
           <div>

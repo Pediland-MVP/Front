@@ -4,11 +4,10 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { SealCheckIcon } from '@phosphor-icons/react/dist/ssr/SealCheck';
 import { WarningCircleIcon } from '@phosphor-icons/react/dist/ssr/WarningCircle';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useSubscriptionStore } from '@/store/subscriptionStore';
-import { hasActiveCreditSubscription, getRemainingDays } from '@/utils/subscription';
+import { getRemainingDays } from '@/utils/subscription';
 import { SubscriptionStatusEnum } from '@/types/subscriptions/enums/subscriptionStatus.enum';
 import { useIsWebView } from '@/hooks/useIsWebView';
 
@@ -86,20 +85,6 @@ export function PageCoverageBadge({ instagramId }: PageCoverageBadgeProps) {
             </Button>
           )}
         </div>
-      </div>
-    );
-  }
-
-  if (!isWebView && hasActiveCreditSubscription(subscriptions)) {
-    return (
-      <div className="mt-2">
-        <Alert
-          variant="note"
-          className="border-blue-600/20 bg-blue-50 p-2 text-xs text-blue-700 [&_svg]:text-blue-600"
-        >
-          <AlertDescription>{t('page_covered_by_credit')}</AlertDescription>
-        </Alert>
-        {buyAdditionalRow}
       </div>
     );
   }
