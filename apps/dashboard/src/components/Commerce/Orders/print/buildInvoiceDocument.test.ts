@@ -69,9 +69,16 @@ const order: OrderDetailView = {
       lineTotal: 190_000,
     },
   ],
-  itemsTotal: 640_000,
-  shippingTotal: 50_000,
-  grandTotal: 690_000,
+  // Deliberately diverging from the sum of the lines below (450_000 + 190_000 = 640_000):
+  // real order-level totals are computed and stored server-side independently of the line
+  // array (rounding, post-hoc adjustments, stale/legacy rows), so a fixture where they
+  // happen to agree with the line sum can't tell a correct "read the stored field" builder
+  // apart from a regressed one that silently starts summing `order.lines` instead. See the
+  // "reads totals directly ..." test below, which asserts on these exact figures and also
+  // asserts the line-sum figure is ABSENT from the output.
+  itemsTotal: 700_000,
+  shippingTotal: 60_000,
+  grandTotal: 760_000,
   paymentMethod: 'card_to_card',
   recipientName: 'علی سری‌یزدی',
   mobile: '09131590982',
@@ -121,13 +128,17 @@ describe('buildInvoiceDocument', () => {
 
   it('reads totals directly from itemsTotal/shippingTotal/grandTotal, not recomputed from lines', () => {
     const html = buildInvoiceDocument(order, LABELS, WHEN, 'یزد', 'یزد');
-    expect(html).toContain('۶۴۰,۰۰۰'); // itemsTotal
-    expect(html).toContain('۶۹۰,۰۰۰'); // grandTotal
+    expect(html).toContain('۷۰۰,۰۰۰'); // order.itemsTotal (stored)
+    expect(html).toContain('۷۶۰,۰۰۰'); // order.grandTotal (stored)
+    // The fixture's lines sum to 450_000 + 190_000 = 640_000 -- deliberately different from
+    // itemsTotal above. If a future change started summing order.lines instead of reading
+    // itemsTotal, this figure would appear in the output and this assertion would catch it.
+    expect(html).not.toContain('۶۴۰,۰۰۰');
   });
 
-  it('writes the grand total in Persian words', () => {
+  it('writes the grand total (order.grandTotal, not a line-sum) in Persian words', () => {
     expect(buildInvoiceDocument(order, LABELS, WHEN, 'یزد', 'یزد')).toContain(
-      'ششصد و نود هزار تومان',
+      'هفتصد و شصت هزار تومان',
     );
   });
 
