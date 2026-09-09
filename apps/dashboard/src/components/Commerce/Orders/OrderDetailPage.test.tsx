@@ -24,15 +24,34 @@ const { toastError } = vi.hoisted(() => ({ toastError: vi.fn() }));
 vi.mock('sonner', () => ({ toast: { error: toastError } }));
 
 // `OrderDetail` resolves nothing over the network itself, but `OrderDetailPage` calls this hook
-// directly -- stub it out with an empty map rather than pull `swr/immutable` into this suite.
+// directly -- stub it out rather than pull `swr/immutable` into this suite. A `vi.fn()` (not a
+// fixed factory) so the one test that needs a populated city/province can override the return
+// value; every other test gets the empty-map default reset in the top-level `beforeEach` below.
+const { mockUseShippingDestinations } = vi.hoisted(() => ({
+  mockUseShippingDestinations: vi.fn(),
+}));
 vi.mock('@/hooks/useShippingDestinations', () => ({
-  useShippingDestinations: () => ({ cityById: new Map() }),
+  useShippingDestinations: mockUseShippingDestinations,
 }));
 
 const { mockUseCommerceOrder } = vi.hoisted(() => ({ mockUseCommerceOrder: vi.fn() }));
 vi.mock('@/hooks/useCommerceOrder', () => ({ useCommerceOrder: mockUseCommerceOrder }));
 
+// `printDocument` drives a real iframe/`window.print()` -- out of scope here too (see
+// `OrderDetail.test.tsx`'s own mock for the same reason). Mocked so the province-resolution test
+// below can inspect the HTML string `OrderDetail` actually built and passed it.
+vi.mock('./print/printDocument', () => ({ printDocument: vi.fn(() => Promise.resolve()) }));
+
 import { OrderDetailPage } from './OrderDetailPage';
+import { printDocument } from './print/printDocument';
+
+// Reset before EVERY test in this file (not just the two describe blocks below), so the new
+// province-resolution test's populated `mockReturnValue` can never leak into an unrelated test
+// that runs after it.
+beforeEach(() => {
+  mockUseShippingDestinations.mockReturnValue({ cityById: new Map(), provinceById: new Map() });
+  vi.mocked(printDocument).mockClear();
+});
 
 const copy = messages.Commerce.Orders;
 
@@ -203,5 +222,45 @@ describe('OrderDetailPage action bar visibility', () => {
     setup(vi.fn(), { status: 'completed', paidAt: null });
     expect(screen.getByTestId('status-updater-slot')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.actions.markPaid })).toBeInTheDocument();
+  });
+});
+
+describe('OrderDetailPage province resolution', () => {
+  beforeEach(() => {
+    toastError.mockClear();
+    mockCan.mockReturnValue(true);
+  });
+
+  /**
+   * Fix for a review finding on Task 8: every OTHER test in this file leaves `cityId: null` (the
+   * base fixture), so `OrderDetailPage`'s `buyerCity = order.cityId ? cityById.get(order.cityId)
+   * : undefined` was always `undefined` there and `provinceById.get(buyerCity.provinceId)` was
+   * never actually reached -- zero coverage that a REAL, non-null province resolves correctly.
+   *
+   * `OrderBuyerCard` renders `cityName` but has no province field at all, so there is nothing on
+   * screen to assert against directly. `provinceName` is consumed only by `OrderDetail`'s print
+   * buttons (Task 8) -- clicking one and inspecting the HTML string handed to the mocked
+   * `printDocument` is what actually proves the resolved value reached `OrderDetail` and was used,
+   * not just that some prop was passed.
+   */
+  it('resolves a real cityId to its province via provinceById and forwards it into a printed document', async () => {
+    const cityId = 10;
+    const provinceId = 5;
+    mockUseShippingDestinations.mockReturnValue({
+      cityById: new Map([[cityId, { id: cityId, name: 'شهرکرد', slug: 'shahrekord', provinceId }]]),
+      provinceById: new Map([
+        [
+          provinceId,
+          { id: provinceId, name: 'چهارمحال و بختیاری', slug: 'chb', tel_prefix: '038' },
+        ],
+      ]),
+    });
+    setup(vi.fn(), { cityId });
+
+    fireEvent.click(screen.getByRole('button', { name: copy.detail.printInvoice }));
+
+    await waitFor(() => expect(printDocument).toHaveBeenCalledTimes(1));
+    const html = vi.mocked(printDocument).mock.calls[0]?.[0];
+    expect(html).toContain('چهارمحال و بختیاری');
   });
 });
