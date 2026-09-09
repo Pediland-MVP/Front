@@ -12,6 +12,7 @@ const LABELS = {
   stickerArea: 'محل نصب لیبل',
   shippingMethod: 'روش ارسال',
   orderRef: 'شناسه سفارش',
+  defaultShippingMethod: 'پست',
 };
 
 const order: any = {
@@ -75,6 +76,12 @@ describe('buildLabelDocument', () => {
     expect(html).toContain('فرستنده');
     expect(html).not.toContain('undefined');
     expect(html).not.toContain('null');
+  });
+
+  it('falls back to "پست" for the shipping method when the shop address is missing', () => {
+    const noAddress = { ...order, instagram: { ...order.instagram, shopAddress: null } };
+    const html = buildLabelDocument(noAddress, LABELS);
+    expect(html).toContain('روش ارسال:&nbsp;</span> پست');
   });
 
   it('escapes HTML in user-controlled text', () => {

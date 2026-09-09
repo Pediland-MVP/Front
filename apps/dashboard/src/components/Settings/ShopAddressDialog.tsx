@@ -149,7 +149,7 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                       // submit a city that contradicts the province shown.
                       form.setValue('cityId', undefined);
                     }}
-                    value={field.value}
+                    value={field.value ?? ''}
                     dir="rtl"
                     disabled={!canManage}
                   >
@@ -179,7 +179,7 @@ export function ShopAddressDialog({ instagramId, open, onOpenChange, canManage }
                   <FormLabel>{t('city')}</FormLabel>
                   <Select
                     onValueChange={(val) => val && field.onChange(val)}
-                    value={field.value}
+                    value={field.value ?? ''}
                     dir="rtl"
                     disabled={!canManage}
                   >

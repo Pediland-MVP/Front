@@ -30,6 +30,7 @@ const LABELS = {
   buyerSignature: 'مهر و امضا خریدار',
   zarinpal: 'زرین‌پال',
   cardToCard: 'کارت به کارت',
+  defaultShippingMethod: 'پست',
 };
 
 const order: any = {
@@ -136,5 +137,17 @@ describe('buildInvoiceDocument', () => {
       orderProducts: [{ ...order.orderProducts[0], product: null }],
     };
     expect(() => buildInvoiceDocument(deleted, LABELS, WHEN)).not.toThrow();
+  });
+
+  it('renders «زمان ثبت» with Persian digits, not Latin', () => {
+    const html = buildInvoiceDocument(order, LABELS, '1404/06/18 14:30');
+    expect(html).toContain('۱۴۰۴/۰۶/۱۸ ۱۴:۳۰');
+    expect(html).not.toContain('1404/06/18 14:30');
+  });
+
+  it('falls back to "پست" for the shipping method when the shop address is missing', () => {
+    const noAddress = { ...order, instagram: { ...order.instagram, shopAddress: null } };
+    const html = buildInvoiceDocument(noAddress, LABELS, WHEN);
+    expect(html).toContain('روش ارسال</b>پست');
   });
 });

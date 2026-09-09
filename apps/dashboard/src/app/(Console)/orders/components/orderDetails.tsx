@@ -78,6 +78,7 @@ const PRINT_KEYS = [
   'buyerSignature',
   'zarinpal',
   'cardToCard',
+  'defaultShippingMethod',
 ] as const;
 
 interface OrderDetailsProps {

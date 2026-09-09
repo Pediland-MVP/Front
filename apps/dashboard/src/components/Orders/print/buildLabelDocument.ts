@@ -86,7 +86,7 @@ export function buildLabelDocument(order: Order, t: PrintLabels): string {
   </div>
 
   <div class="lbl-foot">
-    <div class="box"><span class="k">${esc(t['shippingMethod'])}:&nbsp;</span> ${esc(shop?.shippingMethod ?? '')}</div>
+    <div class="box"><span class="k">${esc(t['shippingMethod'])}:&nbsp;</span> ${esc(shop?.shippingMethod ?? t['defaultShippingMethod'])}</div>
     <div class="box tight"><span class="k">${esc(t['orderRef'])}:&nbsp;</span> <span class="num">${esc(orderReference(order.id))}</span></div>
   </div>
 </div>`;

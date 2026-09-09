@@ -19,7 +19,8 @@ to hand-write the postal label and had no invoice document to give a buyer at al
   فرستنده (sender) block printed on the label and the فروشنده (seller) block on the invoice.
   Read-only for `instagram:view`-only users (dialog opens, every field and the save button are
   disabled); editable for `instagram:manage`.
-- Two print buttons on the order details dialog (`orderDetails.tsx`) build an A5 postal label
+- Two print buttons («پرینت برچسب» / «پرینت فاکتور») on the order details dialog
+  (`orderDetails.tsx`) build an A5 postal label
   and an A4 invoice as standalone HTML strings and print them through a hidden same-origin
   `<iframe>` (`printDocument.ts`) — not `@media print` on the page itself, because the order
   details live inside a Radix dialog rendered through a portal, and fighting that portal's own
@@ -34,7 +35,8 @@ to hand-write the postal label and had no invoice document to give a buyer at al
   prints in Persian words (`numberToPersianWords.ts`), for the legally-expected "amount in
   words" line on the invoice.
 - New i18n namespaces in `messages/fa.json`: `Settings.ShopAddress` (12 keys — dialog labels)
-  and `Orders.Print` (33 keys — every label used inside the printed documents; kept in sync by
+  and `Orders.Print` (34 keys — every label used inside the printed documents, including a
+  `defaultShippingMethod` fallback for accounts with no `ShopAddress` row yet; kept in sync by
   hand with `orderDetails.tsx`'s `PRINT_KEYS` array, since next-intl's `t` is not enumerable).
 
 ## Changes
@@ -50,9 +52,10 @@ to hand-write the postal label and had no invoice document to give a buyer at al
 | `src/components/Orders/print/printDocument.ts` | Hidden same-origin iframe + `window.print()` |
 | `src/components/Settings/ShopAddressDialog.tsx` | Sender-address form per Instagram account |
 | `src/components/Settings/InstagramAccounts.tsx` | Trigger + wiring for `ShopAddressDialog` |
-| `src/app/(Console)/orders/components/orderDetails.tsx` | "چاپ برچسب" / "چاپ فاکتور" buttons, `PRINT_KEYS` |
-| `src/messages/fa.json` | `Settings.ShopAddress` (12 keys), `Orders.Print` (33 keys) |
+| `src/app/(Console)/orders/components/orderDetails.tsx` | «پرینت برچسب» / «پرینت فاکتور» buttons, `PRINT_KEYS` |
+| `src/messages/fa.json` | `Settings.ShopAddress` (12 keys), `Orders.Print` (34 keys) |
 | `src/types/instagram/shopAddress.ts` | `IShopAddress` type |
+| `src/types/order/orders.ts` | Widened `Instagram` (`name`, `username`, `profilePictureUrl`, `shopAddress`), added `transactions` |
 
 ## Verification
 
@@ -61,5 +64,5 @@ to hand-write the postal label and had no invoice document to give a buyer at al
 - This documentation pass re-read every cited file against the current worktree: the print
   components, `orderTotals.ts`'s "sums every line" claim against `getOrderPrices`'s
   single-item read, `ShopAddressDialog.tsx`'s form/reset/submit logic and its `canManage` gate,
-  `orderDetails.tsx`'s `PRINT_KEYS` (33 entries), and `messages/fa.json` (`Orders.Print`: 33
+  `orderDetails.tsx`'s `PRINT_KEYS` (34 entries), and `messages/fa.json` (`Orders.Print`: 34
   keys, `Settings.ShopAddress`: 12 keys — both confirmed by direct count).

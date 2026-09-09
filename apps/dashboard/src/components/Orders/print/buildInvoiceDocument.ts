@@ -168,8 +168,8 @@ export function buildInvoiceDocument(order: Order, t: PrintLabels, when: string)
     <div><b>${esc(t['trackingCode'])}</b><span class="num">${refId ? digits(refId) : '—'}</span></div>
     <div><b>${esc(t['orderRef'])}</b><span class="num">${esc(orderReference(order.id))}</span></div>
     <div><b>${esc(t['paymentMethod'])}</b>${esc(paymentLabel)}</div>
-    <div><b>${esc(t['registeredAt'])}</b><span class="num">${esc(when)}</span></div>
-    <div><b>${esc(t['shippingMethod'])}</b>${esc(shop?.shippingMethod ?? '')}</div>
+    <div><b>${esc(t['registeredAt'])}</b><span class="num">${digits(when)}</span></div>
+    <div><b>${esc(t['shippingMethod'])}</b>${esc(shop?.shippingMethod ?? t['defaultShippingMethod'])}</div>
   </div>
 
   <div class="signs">

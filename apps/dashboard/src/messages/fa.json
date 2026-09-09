@@ -1127,7 +1127,8 @@
       "sellerSignature": "مهر و امضا فروشنده",
       "buyerSignature": "مهر و امضا خریدار",
       "zarinpal": "زرین‌پال",
-      "cardToCard": "کارت به کارت"
+      "cardToCard": "کارت به کارت",
+      "defaultShippingMethod": "پست"
     }
   },
   "Products": {
