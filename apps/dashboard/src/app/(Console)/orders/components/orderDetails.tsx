@@ -14,18 +14,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { buildInvoiceDocument } from '@/components/Orders/print/buildInvoiceDocument';
+import { buildLabelDocument } from '@/components/Orders/print/buildLabelDocument';
+import { printDocument } from '@/components/Orders/print/printDocument';
 import api from '@/hooks/swr/api-client';
+import { usePermissions } from '@/hooks/usePermissions';
 import type { ExceptionMessage } from '@/types/exceptionMessage';
 import { ORDER_STATUS, type OrderNamespace } from '@/types/order/order.namespace';
 import { useGetOrderPrices } from '@/utils/getOrderPrices';
+import { toJalaliDateTime } from '@/utils/jalali';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PenIcon } from '@phosphor-icons/react/dist/ssr/Pen';
 import type { AxiosError } from 'axios';
-import { CreditCard, Loader2, MapPin, Package, User } from 'lucide-react';
+import { CreditCard, Loader2, MapPin, Package, PrinterIcon, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type React from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
@@ -38,6 +43,44 @@ const statusSchema = z.object({
 
 type StatusFormData = z.infer<typeof statusSchema>;
 
+// next-intl's `t` is not enumerable, so the flat map the print builders take is spelled
+// out here. Keep these keys in sync with the Orders.Print namespace in fa.json.
+const PRINT_KEYS = [
+  'sender',
+  'receiver',
+  'state',
+  'city',
+  'address',
+  'phone',
+  'mobile',
+  'postalCode',
+  'stickerArea',
+  'shippingMethod',
+  'orderRef',
+  'invoiceTitle',
+  'seller',
+  'buyer',
+  'row',
+  'productName',
+  'quantity',
+  'unitPrice',
+  'lineTotal',
+  'discount',
+  'afterDiscount',
+  'subtotal',
+  'shipping',
+  'payable',
+  'inWords',
+  'toman',
+  'trackingCode',
+  'paymentMethod',
+  'registeredAt',
+  'sellerSignature',
+  'buyerSignature',
+  'zarinpal',
+  'cardToCard',
+] as const;
+
 interface OrderDetailsProps {
   order: OrderNamespace.GET.OneItemOfOrders;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -46,9 +89,16 @@ interface OrderDetailsProps {
 export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
   const t = useTranslations('Orders.OrderDetails');
   const t_ec = useTranslations('ERROR_CODES');
+  const t_print = useTranslations('Orders.Print');
+  const { can } = usePermissions();
 
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  const printLabels = useMemo(
+    () => Object.fromEntries(PRINT_KEYS.map((k) => [k, t_print(k)])),
+    [t_print],
+  );
 
   const { control, handleSubmit } = useForm<StatusFormData>({
     resolver: zodResolver(statusSchema),
@@ -244,7 +294,39 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
             <CardHeader>
               <CardTitle>{t('orderStatusTitle')}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+              {can('order:view') && (
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    disabled={!order.orderShipping}
+                    title={!order.orderShipping ? t('noShippingAddress') : undefined}
+                    onClick={() => printDocument(buildLabelDocument(order, printLabels))}
+                  >
+                    <PrinterIcon className="size-4" />
+                    {t('printLabel')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() =>
+                      printDocument(
+                        buildInvoiceDocument(
+                          order,
+                          printLabels,
+                          toJalaliDateTime(order.createDate),
+                        ),
+                      )
+                    }
+                  >
+                    <PrinterIcon className="size-4" />
+                    {t('printInvoice')}
+                  </Button>
+                </div>
+              )}
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <Controller
                   name="status"

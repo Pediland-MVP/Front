@@ -1086,10 +1086,48 @@
         "invalid_data": "اطلاعات نامعتبر",
         "cancelled": "لغو شده"
       },
-      "productFieldValues": "فیلدهای سفارشی"
+      "productFieldValues": "فیلدهای سفارشی",
+      "printLabel": "پرینت برچسب",
+      "printInvoice": "پرینت فاکتور",
+      "noShippingAddress": "این سفارش آدرس ارسال ندارد"
     },
     "EditDialog": {
       "editOrder": "ویرایش سفارش"
+    },
+    "Print": {
+      "sender": "فرستنده",
+      "receiver": "گیرنده",
+      "state": "استان",
+      "city": "شهر",
+      "address": "آدرس",
+      "phone": "تلفن",
+      "mobile": "موبایل",
+      "postalCode": "کدپستی",
+      "stickerArea": "محل نصب لیبل",
+      "shippingMethod": "روش ارسال",
+      "orderRef": "شناسه سفارش",
+      "invoiceTitle": "فاکتور فروش",
+      "seller": "فروشنده",
+      "buyer": "خریدار",
+      "row": "ردیف",
+      "productName": "نام محصول",
+      "quantity": "تعداد",
+      "unitPrice": "مبلغ واحد",
+      "lineTotal": "مبلغ کل",
+      "discount": "تخفیف",
+      "afterDiscount": "مبلغ کل پس از تخفیف",
+      "subtotal": "جمع کل",
+      "shipping": "هزینه ارسال",
+      "payable": "مبلغ کل قابل پرداخت",
+      "inWords": "به حروف",
+      "toman": "تومان",
+      "trackingCode": "کد پیگیری",
+      "paymentMethod": "روش پرداخت",
+      "registeredAt": "زمان ثبت",
+      "sellerSignature": "مهر و امضا فروشنده",
+      "buyerSignature": "مهر و امضا خریدار",
+      "zarinpal": "زرین‌پال",
+      "cardToCard": "کارت به کارت"
     }
   },
   "Products": {
