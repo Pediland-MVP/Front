@@ -47,6 +47,8 @@ const knownSegmentKey = (seg: string): string | null => {
       return 'products';
     case 'shipping':
       return 'shipping';
+    case 'shop':
+      return 'shop';
     // `taxonomy` and `import` are the other two static children of /products. They were missing
     // here, so their breadcrumb fell back to the raw URL slug (CLAUDE.md §18.5).
     case 'taxonomy':

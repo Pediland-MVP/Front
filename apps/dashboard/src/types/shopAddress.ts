@@ -1,5 +1,4 @@
 export interface IShopAddress {
-  id: string;
   address: string | null;
   postalcode: string | null;
   phone: string | null;

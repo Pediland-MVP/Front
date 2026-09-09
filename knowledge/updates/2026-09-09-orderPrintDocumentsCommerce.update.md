@@ -5,6 +5,12 @@ commits `a4e996e0`..`b6a7cde7` on `feat/commerce-product-core`, already shipped)
 `ShopAddress` entity, the two `/instagram/:instagramID/shopAddress` endpoints, and the new `shop`
 block on `GET /commerce/orders/:id` — read that one first, this side is built on it.
 
+> **Rearchitected later the same day** — see the dated section at the bottom of this file. The
+> `ShopAddressDialog`/`InstagramAccounts.tsx` 4th button described below (through "## Verification")
+> was REPLACED by a full settings page (`ShopAddressSettings` at `/products/shop`), because the
+> address moved from per-Instagram-account to per-workspace on the Back side. Kept as-is for the
+> commit-by-commit history; do not treat it as the current design.
+
 API contract rows updated in [`knowledge/front-back-relations.md`](../front-back-relations.md).
 
 ## Problem
@@ -116,3 +122,58 @@ already covers — this doc is Front-only file list.
 - **Not clicked through in a browser.** No one has opened the print preview or the print dialog
   itself against a real order, and the printed A5/A4 layout has not been checked against an actual
   printer or PDF export.
+
+## 2026-09-09 (later the same day) — Rearchitected to per-workspace
+
+Back side full reasoning: `Back/knowledge/updates/2026-09-09-orderPrintDocumentsCommerce.update.md`'s
+matching dated section. Commit range this section describes: Back `b6a7cde7..e8fb5660`, Front
+`a38637b8..HEAD` (this same branch).
+
+**Problem:** the address was per-Instagram-account (`ShopAddressDialog`, opened from a 4th button
+on the Instagram accounts settings list). The actual requirement is one return address per
+**workspace**, not one per connected page.
+
+**Front changes — entirely a UI-location + data-source swap, `OrderShopView`'s shape and the print
+builders (`buildLabelDocument`/`buildInvoiceDocument`) are UNCHANGED:**
+
+- `ShopAddressDialog.tsx` (+ `.test.tsx`) DELETED. Replaced by `ShopAddressSettings.tsx`
+  (`components/Commerce/Shop/`, + `.test.tsx`) — a full settings page, not a dialog, since there is
+  now exactly one address to show (no per-account switching to gate behind a trigger button).
+- New route `/products/shop/page.tsx`, under "کالا و خدمات" — sibling of `/products/shipping`,
+  same reasoning: a setting that shapes what prints/charges on an order belongs beside the
+  catalogue, not under general account settings.
+- `InstagramAccounts.tsx` — the 4th action button («آدرس») and its `ShopAddressDialog` wiring
+  removed entirely; the account list goes back to its original 3 actions (Copy/Reconnect/Delete).
+- New `apps/dashboard/src/hooks/useShopAddress.ts` — bound to the fixed key
+  `/commerce/shop-address` (no route param, matching `useShippingOptions`'s shape), replacing the
+  old dialog's own inline `useSWRImmutable` call keyed by `instagramId`.
+- `apps/dashboard/src/types/instagram/shopAddress.ts` → moved to `apps/dashboard/src/types/shopAddress.ts`
+  (top-level, matching `shipping.ts`'s convention) and dropped the now-nonexistent `id` field
+  (`workspaceId` is the row's identity on the Back side now, never sent to the client).
+- `usePermissions().can('order:manage')` now gates editing (was `instagram:manage`) — matches the
+  Back permission split change (`ORDER_VIEW`/`ORDER_MANAGE`, same as the sibling shipping-options
+  controller).
+- Sidebar (`ConsoleSidebar.tsx`) gained a `productsShop` entry; breadcrumb (`HeaderBreadcrumb.tsx`)
+  gained a `shop` segment. New i18n keys: `Console.Sidebar.productsShop` (note: **`fa/Console.json`**,
+  not `fa.json` — `i18n/request.ts` shallow-merges the two and `fa.json` carries no top-level
+  `Console` key at all, so there is no shadowing risk here, unlike `ErrorCodes.json`) and
+  `Breadcrumbs.shop` (`fa.json`, alongside the existing `shipping`/`taxonomy`/`import` entries).
+  `Settings.Accounts.shopAddress` (the old per-account button label) removed as dead;
+  `Settings.ShopAddress.title`/`.description` reworded from "این آدرس روی برچسب پستی و فاکتور
+  همین پیج چاپ می‌شود" (this page) to reflect the whole shop.
+- The two RHF `undefined`-vs-`''` fixes from the original `ShopAddressDialog` (see the section
+  above) carry over unchanged in spirit: the data-driven load still resets `state`/`cityId` to
+  `''`, and the province `Select`'s live `onValueChange` still clears `cityId` to `''` rather than
+  `undefined`. The account-SWITCHING scenario that originally exposed bug 1 no longer exists (a
+  single fixed SWR key, no re-keying), so that specific regression class is gone by construction —
+  but the general Controller-bound-Select quirk still applies to any load/clear, so both fixes stay.
+
+**Verification:**
+- `pnpm exec vitest run src/components/Commerce/Shop src/components/Settings/InstagramAccounts.tsx
+  src/components/Layout/ConsoleSidebar.test.tsx` (plus the full `src/components/Commerce` +
+  `src/components/Settings` + `src/hooks` suites) — all passing, 53 suites / 616 tests in the wider
+  sweep.
+- `pnpm exec tsc --noEmit`: **207 → 207** (net zero) — `ShopAddressDialog.tsx`'s pre-existing
+  accepted `zodResolver` error moved to `ShopAddressSettings.tsx` (same error class, same file
+  count as before, not a new one).
+- **Still not clicked through in a browser** — same known gap as the original cut.
