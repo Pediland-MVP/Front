@@ -205,13 +205,22 @@ export function VariantGroupRow({
       role="row"
       className="border-ln border-b px-4 py-[9px]"
     >
-      <Checkbox
-        checked={selected}
-        aria-label={t('selectGroup', { name: label })}
-        onClick={() => onToggleSelect(groupKey)}
-      />
+      {/*
+        Radix's Checkbox renders a hidden native `<input>` as a sibling of its button (for native
+        form participation) — unwrapped, that input becomes an extra, uncounted child of
+        `[data-vg]`. The wrapper keeps that sibling contained so this stays the row's ONE "chk"
+        cell — load-bearing now that every cell below is targeted by `data-cell`, not position
+        (see the same wrapper in `VariantLeafRow`).
+      */}
+      <div role="gridcell" data-cell="chk" className="flex justify-end">
+        <Checkbox
+          checked={selected}
+          aria-label={t('selectGroup', { name: label })}
+          onClick={() => onToggleSelect(groupKey)}
+        />
+      </div>
 
-      <div role="gridcell" className="flex min-w-0 items-center gap-2">
+      <div role="gridcell" data-cell="label" className="flex min-w-0 items-center gap-2">
         {colorHex && (
           <span
             aria-hidden="true"
@@ -225,6 +234,7 @@ export function VariantGroupRow({
       <button
         type="button"
         role="gridcell"
+        data-cell="media"
         onClick={() => onOpenPicker({ kind: 'group', key: groupKey })}
         aria-label={t('mediaAria', { name: label })}
         title={
@@ -247,7 +257,8 @@ export function VariantGroupRow({
         )}
       </button>
 
-      <div role="gridcell">
+      <div role="gridcell" data-cell="price" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">{t('colPrice')}</span>
         <GroupCell
           field="price"
           agg={price}
@@ -261,52 +272,62 @@ export function VariantGroupRow({
         />
       </div>
 
-      <div role="gridcell" className="flex items-center gap-1.5">
-        <GroupCell
-          field="compare"
-          agg={compare}
-          childIndexes={childIndexes}
-          ariaLabel={t('compareAria', { name: label })}
-          placeholder={t('comparePlaceholder')}
-          rangeTitle={t('rangeCompareTitle')}
-          rolledKey="rolledCompare"
-          tone={
-            compare.state === 'uniform' && price.state === 'uniform' && compare.value <= price.value
-              ? 'zero'
-              : ''
-          }
-        />
-        {discount != null && (
-          <span
-            title={t('discount')}
-            className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
-          >
-            {t('discountBadge', { percent: formatCount(discount) })}
-          </span>
-        )}
-      </div>
-
-      <div role="gridcell" className="flex items-center gap-1.5">
-        <GroupCell
-          field="stock"
-          agg={stock}
-          childIndexes={childIndexes}
-          ariaLabel={t('stockAria', { name: label })}
-          placeholder={t('stockPlaceholder')}
-          rangeTitle={t('rangeStockTitle')}
-          rolledKey="rolledStock"
-          tone={
-            stock.state === 'empty'
-              ? 'empty'
-              : stock.state === 'uniform' && stock.value === 0
+      <div role="gridcell" data-cell="cmp" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">
+          {t('colCompare')}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <GroupCell
+            field="compare"
+            agg={compare}
+            childIndexes={childIndexes}
+            ariaLabel={t('compareAria', { name: label })}
+            placeholder={t('comparePlaceholder')}
+            rangeTitle={t('rangeCompareTitle')}
+            rolledKey="rolledCompare"
+            tone={
+              compare.state === 'uniform' &&
+              price.state === 'uniform' &&
+              compare.value <= price.value
                 ? 'zero'
                 : ''
-          }
-          bold
-        />
+            }
+          />
+          {discount != null && (
+            <span
+              title={t('discount')}
+              className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
+            >
+              {t('discountBadge', { percent: formatCount(discount) })}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div role="gridcell" className="flex items-center justify-end">
+      <div role="gridcell" data-cell="stock" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">{t('colStock')}</span>
+        <div className="flex items-center gap-1.5">
+          <GroupCell
+            field="stock"
+            agg={stock}
+            childIndexes={childIndexes}
+            ariaLabel={t('stockAria', { name: label })}
+            placeholder={t('stockPlaceholder')}
+            rangeTitle={t('rangeStockTitle')}
+            rolledKey="rolledStock"
+            tone={
+              stock.state === 'empty'
+                ? 'empty'
+                : stock.state === 'uniform' && stock.value === 0
+                  ? 'zero'
+                  : ''
+            }
+            bold
+          />
+        </div>
+      </div>
+
+      <div role="gridcell" data-cell="act" className="flex items-center justify-end">
         <button
           type="button"
           data-chev="1"

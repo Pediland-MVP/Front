@@ -1,22 +1,8 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useTranslations } from 'next-intl';
-
-import { LayoutPage } from '@/components/Layout/LayoutPage';
-import { ShopAddressSettings } from '@/components/Commerce/Shop/ShopAddressSettings';
-
-/**
- * `/products/shop` — the workspace's own return address, under "کالا و خدمات". Sibling of
- * `/products/shipping`: both are settings that shape what gets printed/charged on an order, so
- * they live beside the catalogue rather than under general account settings.
- */
+// The shop-address form moved into `/products/settings` as a section, alongside the store's
+// other commerce settings. Kept as a redirect (not deleted outright) so any bookmark or old link
+// to this URL still lands somewhere useful.
 export default function Page() {
-  const t = useTranslations('Settings.ShopAddress');
-
-  return (
-    <LayoutPage>
-      <h1 className="sr-only">{t('title')}</h1>
-      <ShopAddressSettings />
-    </LayoutPage>
-  );
+  redirect('/products/settings');
 }

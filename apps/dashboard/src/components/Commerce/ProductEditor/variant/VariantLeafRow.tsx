@@ -107,16 +107,25 @@ export function VariantLeafRow({
       role="row"
       className="border-ln border-b px-4 py-[7px]"
     >
-      <Checkbox
-        checked={selected}
-        aria-label={t('select', { name: ariaLabel })}
-        // The toggle lives in `onClick`, not `onCheckedChange`, because only the click event
-        // carries `shiftKey` — and shift-click is how a range gets selected.
-        onClick={(event) => onToggleSelect(rowKey, event.shiftKey)}
-      />
+      {/*
+        Radix's Checkbox renders a hidden native `<input>` as a sibling of its button (for native
+        form participation) — unwrapped, that input becomes an extra, uncounted child of
+        `[data-vg]`. The wrapper keeps that sibling contained so this stays the row's ONE "chk"
+        cell — load-bearing now that every cell below is targeted by `data-cell`, not position.
+      */}
+      <div role="gridcell" data-cell="chk" className="flex justify-end">
+        <Checkbox
+          checked={selected}
+          aria-label={t('select', { name: ariaLabel })}
+          // The toggle lives in `onClick`, not `onCheckedChange`, because only the click event
+          // carries `shiftKey` — and shift-click is how a range gets selected.
+          onClick={(event) => onToggleSelect(rowKey, event.shiftKey)}
+        />
+      </div>
 
       <div
         role="gridcell"
+        data-cell="label"
         className={`flex min-w-0 items-center gap-2 ${asTopRow ? '' : 'ps-[22px]'}`}
       >
         {!asTopRow && (
@@ -133,6 +142,7 @@ export function VariantLeafRow({
       <button
         type="button"
         role="gridcell"
+        data-cell="media"
         onClick={() => onOpenPicker({ kind: 'row', index })}
         aria-label={t('mediaAria', { name: ariaLabel })}
         title={thumb ? t('mediaSome', { count: formatCount(thumbIds.length) }) : t('mediaEmpty')}
@@ -148,7 +158,8 @@ export function VariantLeafRow({
         )}
       </button>
 
-      <div role="gridcell">
+      <div role="gridcell" data-cell="price" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">{t('colPrice')}</span>
         <VariantNumberCell
           index={index}
           field="price"
@@ -161,85 +172,93 @@ export function VariantLeafRow({
         />
       </div>
 
-      <div role="gridcell" className="flex items-center gap-1.5">
-        <VariantNumberCell
-          index={index}
-          field="compare"
-          value={row.compare}
-          disabled={!discounted}
-          tone={discounted ? compareTone(row.compare, row.price) : ''}
-          ariaLabel={t('compareAria', { name: ariaLabel })}
-          placeholder={discounted ? t('comparePlaceholder') : t('noDiscount')}
-          className="bg-card border-ln focus:border-primary text-mut h-[34px] w-full min-w-0 rounded-md border px-2 text-xs font-semibold outline-none disabled:opacity-60"
-          onNavigate={(direction) => onNavigate(index, 'compare', direction)}
-          onFillDown={() => onFillDown(index, 'compare')}
-        />
-        <button
-          type="button"
-          data-disc="1"
-          aria-pressed={discounted}
-          aria-label={t('hasDiscountAria', { name: ariaLabel })}
-          title={t('hasDiscount')}
-          onClick={() => {
-            const next = !discounted;
-            setValue(`variants.${index}.hasDiscount`, next, { shouldDirty: true });
-            // Clearing on the way off is the load-bearing half. `compareAtPrice` is simply
-            // omitted from the payload when null and the backend writes `?? null`, so a value
-            // left behind here would keep the row discounted no matter what this button reads.
-            if (!next) setValue(`variants.${index}.compare`, null, { shouldDirty: true });
-          }}
-          // Explicit conditional classes rather than the `aria-pressed:` variant: this is the
-          // only state the button has, and it must not depend on that variant being enabled.
-          className={`size-[30px] flex-none rounded-md border p-0 text-sm font-bold ${
-            discounted ? 'border-primary bg-tint2 text-primary' : 'border-ln bg-card text-mut'
-          }`}
-        >
-          ٪
-        </button>
-        {discount != null && (
-          <span
-            title={t('discount')}
-            className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
+      <div role="gridcell" data-cell="cmp" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">
+          {t('colCompare')}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <VariantNumberCell
+            index={index}
+            field="compare"
+            value={row.compare}
+            disabled={!discounted}
+            tone={discounted ? compareTone(row.compare, row.price) : ''}
+            ariaLabel={t('compareAria', { name: ariaLabel })}
+            placeholder={discounted ? t('comparePlaceholder') : t('noDiscount')}
+            className="bg-card border-ln focus:border-primary text-mut h-[34px] w-full min-w-0 rounded-md border px-2 text-xs font-semibold outline-none disabled:opacity-60"
+            onNavigate={(direction) => onNavigate(index, 'compare', direction)}
+            onFillDown={() => onFillDown(index, 'compare')}
+          />
+          <button
+            type="button"
+            data-disc="1"
+            aria-pressed={discounted}
+            aria-label={t('hasDiscountAria', { name: ariaLabel })}
+            title={t('hasDiscount')}
+            onClick={() => {
+              const next = !discounted;
+              setValue(`variants.${index}.hasDiscount`, next, { shouldDirty: true });
+              // Clearing on the way off is the load-bearing half. `compareAtPrice` is simply
+              // omitted from the payload when null and the backend writes `?? null`, so a value
+              // left behind here would keep the row discounted no matter what this button reads.
+              if (!next) setValue(`variants.${index}.compare`, null, { shouldDirty: true });
+            }}
+            // Explicit conditional classes rather than the `aria-pressed:` variant: this is the
+            // only state the button has, and it must not depend on that variant being enabled.
+            className={`size-[30px] flex-none rounded-md border p-0 text-sm font-bold ${
+              discounted ? 'border-primary bg-tint2 text-primary' : 'border-ln bg-card text-mut'
+            }`}
           >
-            {t('discountBadge', { percent: formatCount(discount) })}
-          </span>
-        )}
+            ٪
+          </button>
+          {discount != null && (
+            <span
+              title={t('discount')}
+              className="bg-dtint text-dtext flex-none rounded-full px-1.5 py-0.5 text-xs font-bold"
+            >
+              {t('discountBadge', { percent: formatCount(discount) })}
+            </span>
+          )}
+        </div>
       </div>
 
-      <div role="gridcell" className="flex items-center gap-1.5">
-        <VariantNumberCell
-          index={index}
-          field="stock"
-          value={row.stock}
-          display={row.infinite ? '∞' : undefined}
-          disabled={row.infinite}
-          tone={stockTone(row.stock, row.infinite)}
-          ariaLabel={t('stockAria', { name: ariaLabel })}
-          placeholder={t('stockPlaceholder')}
-          className="bg-card border-ln focus:border-primary h-[34px] w-full min-w-0 rounded-md border px-2 text-xs outline-none disabled:opacity-60"
-          onNavigate={(direction) => onNavigate(index, 'stock', direction)}
-          onFillDown={() => onFillDown(index, 'stock')}
-        />
-        <button
-          type="button"
-          data-inf="1"
-          aria-pressed={row.infinite}
-          aria-label={t('infiniteAria', { name: ariaLabel })}
-          title={t('infinite')}
-          onClick={() => {
-            const next = !row.infinite;
-            setValue(`variants.${index}.infinite`, next, { shouldDirty: true });
-            // ∞ means "not tracked" — a leftover count would be sent as `initialStock` and
-            // silently rewrite the ledger for a variant that has no count.
-            if (next) setValue(`variants.${index}.stock`, null, { shouldDirty: true });
-          }}
-          className="border-ln bg-card text-mut size-[30px] flex-none rounded-md border p-0 text-sm font-bold"
-        >
-          ∞
-        </button>
+      <div role="gridcell" data-cell="stock" className="flex flex-col gap-1">
+        <span className="text-mut hidden text-xs font-bold max-[760px]:block">{t('colStock')}</span>
+        <div className="flex items-center gap-1.5">
+          <VariantNumberCell
+            index={index}
+            field="stock"
+            value={row.stock}
+            display={row.infinite ? '∞' : undefined}
+            disabled={row.infinite}
+            tone={stockTone(row.stock, row.infinite)}
+            ariaLabel={t('stockAria', { name: ariaLabel })}
+            placeholder={t('stockPlaceholder')}
+            className="bg-card border-ln focus:border-primary h-[34px] w-full min-w-0 rounded-md border px-2 text-xs outline-none disabled:opacity-60"
+            onNavigate={(direction) => onNavigate(index, 'stock', direction)}
+            onFillDown={() => onFillDown(index, 'stock')}
+          />
+          <button
+            type="button"
+            data-inf="1"
+            aria-pressed={row.infinite}
+            aria-label={t('infiniteAria', { name: ariaLabel })}
+            title={t('infinite')}
+            onClick={() => {
+              const next = !row.infinite;
+              setValue(`variants.${index}.infinite`, next, { shouldDirty: true });
+              // ∞ means "not tracked" — a leftover count would be sent as `initialStock` and
+              // silently rewrite the ledger for a variant that has no count.
+              if (next) setValue(`variants.${index}.stock`, null, { shouldDirty: true });
+            }}
+            className="border-ln bg-card text-mut size-[30px] flex-none rounded-md border p-0 text-sm font-bold"
+          >
+            ∞
+          </button>
+        </div>
       </div>
 
-      <div role="gridcell" className="flex items-center justify-end">
+      <div role="gridcell" data-cell="act" className="flex items-center justify-end">
         <button
           type="button"
           onClick={() => onDelete(index)}

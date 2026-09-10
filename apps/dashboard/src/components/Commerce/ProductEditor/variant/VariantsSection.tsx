@@ -221,18 +221,42 @@ export function VariantsSection({ media, onOpenPicker }: VariantsSectionProps) {
     <>
       <div className="bg-card border-ln rounded-xl border shadow-xs">
         <div className="overflow-x-auto">
-          <div role="grid" aria-label={t('gridLabel')} className="min-w-[900px]">
+          {/* min-w only above the 760px reflow breakpoint (globals.css) — below it the grid
+              already reflows to a 4-column card per row, so forcing 900px here would just make
+              that narrow layout scroll horizontally for no reason. */}
+          <div
+            role="grid"
+            aria-label={t('gridLabel')}
+            className="min-w-[900px] max-[760px]:min-w-0"
+          >
             <div
               data-vg="1"
               data-head="1"
               role="row"
               className="bg-muted border-lnv text-mut border-b px-4 py-2.5 text-xs font-bold"
             >
-              <Checkbox
-                checked={selectedKeys.length > 0 && selectedKeys.length === orderedKeys.length}
-                aria-label={t('selectAll')}
-                onClick={toggleAll}
-              />
+              {/*
+                Radix's Checkbox renders a hidden native `<input>` as a sibling of its button (for
+                native form participation) — unwrapped, that input becomes an extra, uncounted
+                child of `[data-vg]`. The wrapper keeps that sibling contained so this stays the
+                row's ONE "chk" cell (see the same wrapper in `VariantLeafRow`).
+              */}
+              <div role="columnheader" data-cell="chk" className="flex justify-end">
+                <Checkbox
+                  checked={selectedKeys.length > 0 && selectedKeys.length === orderedKeys.length}
+                  aria-label={t('selectAll')}
+                  onClick={toggleAll}
+                />
+              </div>
+              {/*
+                Mobile only, and deliberately NOT `role="columnheader"` — the CSS below hides
+                every real columnheader under 760px (their job moves inline onto each field, see
+                `VariantLeafRow`/`VariantGroupRow`) and a matching role here would hide this too.
+                The checkbox's own `aria-label` already carries the accessible name.
+              */}
+              <span aria-hidden="true" className="hidden max-[760px]:inline">
+                {t('selectAll')}
+              </span>
               <span role="columnheader">{t('colType')}</span>
               <span role="columnheader">{t('colMedia')}</span>
               <span role="columnheader">{t('colPrice')}</span>

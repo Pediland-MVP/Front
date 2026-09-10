@@ -208,18 +208,24 @@
 
 /* ---- Commerce product editor: the rules Tailwind cannot express ----
  *
- * Everything else on this page is Tailwind utilities. These are raw CSS for two concrete
- * reasons, not for convenience:
- *
- * 1. `grid-template-areas` HAS NO TAILWIND UTILITY. Below 760px the variation grid stops being
- *    seven columns and re-flows into a four-column / three-row card — checkbox and thumbnail
- *    each span all three rows, and label / price / compare / stock / actions rearrange around
- *    them. That is a named-area layout. Expressing it in an arbitrary-value class would mean an
- *    unreadable `[grid-template-areas:...]` string plus seven `[grid-area:...]` classes, repeated
- *    on every one of up to 2000 rows, at two breakpoints.
+ * Everything else on this page is Tailwind utilities. This file only holds the one thing a class
+ * list cannot express: the desktop `grid-template-columns` value below is long and identical on
+ * every one of up to 2000 rows — an arbitrary-value Tailwind class would mean repeating that
+ * string verbatim in three components instead of once here.
  *
  * `[data-bad]` and `[data-chev]` ride along here because they must beat the `focus:`/`hover:`
  * border utilities sitting on the same element — hence the `!important`.
+ *
+ * POSTMORTEM, read before touching this block again: this used to reflow the row below 760px
+ * into a `grid-template-areas` card, with `nth-child` picking out which cell got which area.
+ * Radix's `Checkbox` renders a hidden native `<input>` as an invisible SIBLING of its button (for
+ * native form participation) — a bare `<Checkbox />` sitting directly among a row's cells made
+ * that input an uncounted extra child, so every `nth-child` rule silently pointed one cell too
+ * far (the stock input rendered inside the 56px delete-button column). The fix was two-fold and
+ * both halves matter: every `<Checkbox>` is now wrapped in its own cell (containing that hidden
+ * input, so it can never leak into the row again), AND — per this section — mobile no longer
+ * does area/position math at all. Below 760px this is a plain stacked list; every real cell
+ * carries a `data-cell` name for the rare style that still needs to target one.
  */
 
 /* Variation grid, desktop: one column per header cell.
@@ -230,56 +236,48 @@
   gap: 10px;
   grid-template-columns:
     26px minmax(140px, 1.2fr) 88px minmax(120px, 1fr)
-    minmax(130px, 1fr) minmax(120px, 0.9fr) 56px;
+    minmax(130px, 1fr) minmax(130px, 1fr) 56px;
 }
 
+/* Below 760px this is not a grid — every cell is a full-width block, stacked in DOM order, and
+   carries its own inline label (see `VariantLeafRow`/`VariantGroupRow`), so the desktop column
+   headers above the list are redundant here and hidden. */
 @media (max-width: 760px) {
   [data-vg] {
-    grid-template-columns: 24px 44px minmax(0, 1fr) minmax(58px, 84px) !important;
-    grid-template-areas:
-      'chk media label act'
-      'chk media price stock'
-      'chk media cmp  cmp' !important;
-    column-gap: 8px;
-    row-gap: 6px;
-    padding-inline: 11px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-inline: 11px;
   }
-  /* Positional, because the row's children are fixed in count and order — a class per cell would
-     have to be threaded through three separate row components for no gain. */
-  [data-vg] > *:nth-child(1) {
-    grid-area: chk;
-    align-self: start;
-    margin-top: 12px;
+
+  /* The header row keeps only the "select all" checkbox (plus its own inline label) — every
+     other columnheader's job moved onto the fields themselves. */
+  [data-vg][data-head] {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
   }
-  [data-vg] > *:nth-child(2) {
-    grid-area: label;
+  [data-vg][data-head] [role='columnheader']:not([data-cell]) {
+    display: none;
   }
-  [data-vg] > *:nth-child(3) {
-    grid-area: media;
-    align-self: start;
+
+  [data-vg] [data-cell='media'] {
+    align-self: flex-start;
   }
-  [data-vg] > *:nth-child(4) {
-    grid-area: price;
-  }
-  [data-vg] > *:nth-child(5) {
-    grid-area: cmp;
-  }
-  [data-vg] > *:nth-child(6) {
-    grid-area: stock;
-  }
-  [data-vg] > *:nth-child(7) {
-    grid-area: act;
-  }
+
   /* The child row's indent is a desktop affordance; at this width it only eats the label. */
-  [data-row='leaf'] > *:nth-child(2) {
+  [data-row='leaf'] [data-cell='label'] {
     padding-inline-start: 0 !important;
   }
 }
 
 @media (max-width: 420px) {
-  [data-vg] {
-    grid-template-columns: 22px 38px minmax(0, 1fr) minmax(52px, 72px) !important;
-    column-gap: 6px;
+  /* The media thumbnail button is a fixed `size-10`/`size-11` (40/44px) in the component — cap it
+     to match the tighter padding at this width. */
+  [data-vg] [data-cell='media'] {
+    width: 34px !important;
+    height: 34px !important;
   }
 }
 

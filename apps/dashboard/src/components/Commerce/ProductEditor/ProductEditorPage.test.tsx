@@ -476,6 +476,44 @@ describe('ProductEditorPage — store settings default prefill', () => {
     expect(screen.getByText(FINAL_MESSAGE.hint)).toBeInTheDocument();
   });
 
+  it('applies the default once it arrives, even if the FIRST resolved render already had isLoading:false with a stale/empty value', async () => {
+    // Reproduces a real bug: SWR can serve a stale cached `null` (isLoading already false, e.g.
+    // left over from an earlier visit to /products/settings or /products/add in the same SPA
+    // session) before its background revalidation delivers the real default moments later. The
+    // prefill must not permanently give up after that first, stale resolution.
+    // A stateful mock, not `mockReturnValueOnce` — the component re-renders itself several times
+    // during mount (other effects settle too), which would drain a one-shot queue before this
+    // test's own assertions run. `resolved` only flips on an explicit trigger below, so every
+    // render up to that point deterministically sees the stale value, same as real SWR would.
+    let resolved = false;
+    mockUseStoreSettings.mockImplementation(() =>
+      resolved
+        ? {
+            settings: { defaultFinalMessage: 'ممنون از خرید شما' },
+            isLoading: false,
+            error: undefined,
+            mutate: vi.fn(),
+            save: vi.fn(),
+          }
+        : { settings: null, isLoading: false, error: undefined, mutate: vi.fn(), save: vi.fn() },
+    );
+    stubReads(undefined);
+
+    const { rerender } = renderEditor({ mode: 'create' });
+    expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('');
+
+    resolved = true;
+    rerender(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <ProductEditorPage mode="create" />
+      </NextIntlClientProvider>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(FINAL_MESSAGE.title)).toHaveValue('ممنون از خرید شما'),
+    );
+  });
+
   it('does not prefill an existing product being edited, even with a workspace default', async () => {
     mockUseStoreSettings.mockReturnValue({
       settings: { defaultFinalMessage: 'پیش‌فرض فروشگاه' },

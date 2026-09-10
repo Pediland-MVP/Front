@@ -389,19 +389,24 @@ const ProductEditorBody = ({
 
   /**
    * Prefills `finalMessage` from the workspace's store-settings default, CREATE mode only -- an
-   * existing product already has its own value, seeded above by `seedFrom`. Only settled once
-   * (`isLoading` false, even when the workspace has no default yet) so a slow request cannot
-   * overwrite what the merchant already typed on step ۱۱ while waiting for it, and only onto a
-   * still-blank PHYSICAL product: a DIGITAL one has no default to apply (`FinalMessageSection`),
-   * and a merchant who raced ahead and switched kind or typed something of their own wins.
+   * existing product already has its own value, seeded above by `seedFrom`.
+   *
+   * Deliberately has NO one-shot "seeded" latch (a previous version had one, and it was a real
+   * bug): SWR can resolve `isLoading: false` with a STALE cached value -- e.g. `null`, left over
+   * from an earlier visit to this page or to `/products/settings` earlier in the same SPA session
+   * -- before its background revalidation delivers the real default a moment later. A latch that
+   * fires on that FIRST resolution permanently skips the real value once it arrives: the field
+   * stays blank while the hint below (computed straight from the live `storeSettings`, not from
+   * this effect) already claims the blank field IS the default. So this reruns on every
+   * `storeSettings` change and re-applies as long as the field is STILL BLANK -- that blank check
+   * alone is what stops it from clobbering a merchant who already typed something while waiting,
+   * or switched kind; it does not need a separate "already ran" guard.
    */
-  const storeSettingsSeeded = useRef(false);
   const { settings: storeSettings, isLoading: storeSettingsLoading } = useStoreSettings(
     mode === 'create',
   );
   useEffect(() => {
-    if (mode !== 'create' || storeSettingsSeeded.current || storeSettingsLoading) return;
-    storeSettingsSeeded.current = true;
+    if (mode !== 'create' || storeSettingsLoading) return;
     const defaultMessage = storeSettings?.defaultFinalMessage;
     if (!defaultMessage) return;
     if (getValues('kind') !== 'physical' || getValues('finalMessage') !== '') return;
