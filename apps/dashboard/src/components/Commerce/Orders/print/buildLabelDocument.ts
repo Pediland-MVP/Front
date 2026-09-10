@@ -15,30 +15,130 @@ export function orderReference(orderId: string): string {
   return `BF-${orderId.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
 }
 
+/**
+ * Every dimension is a custom property so a paper bucket can re-tune the whole label by
+ * overriding a dozen tokens, instead of restating the layout once per size. The base values are
+ * the A5 portrait label this started as -- at 148x210 with `--pad: 10mm` the old hard-coded
+ * `height: 190mm` and `height: 100%` are the same number, so A5 output is unchanged.
+ *
+ * The buckets below are plain media queries because in print the viewport IS the page box: a
+ * `max-width: 120mm` query matches the paper the user picked in the dialog, not the screen.
+ * That is the whole reason `@page { size: auto }` is worth it -- pinning `A5 portrait` would
+ * force every query to one answer.
+ */
 const LABEL_CSS = `
-  body { font-size: 3.4mm; line-height: 1.85; padding: 10mm; }
-  .lbl { display: flex; flex-direction: column; gap: 4mm; height: 190mm; }
-  .lbl-top { display: grid; grid-template-columns: 1fr 32mm; gap: 3mm; }
-  .lbl-mid { display: grid; grid-template-columns: 1fr 36mm; gap: 3mm; }
+  :root {
+    --pad: 10mm;          /* page edge -> content */
+    --gap: 4mm;           /* between the three bands */
+    --gap-in: 3mm;        /* inside a band */
+    --bpad: 4mm;          /* inside a box */
+    --radius: 2mm;
+    --bw: 0.35mm;
+    --lh: 1.85;
+    --fs: 3.4mm;
+    --fs-name: 4.4mm;
+    --fs-name-mid: 5mm;   /* the receiver reads bigger than the sender on purpose */
+    --fs-addr: 3.7mm;
+    --fs-handle: 2.7mm;
+    --fs-sticker: 3.2mm;
+    --name-mb: 2.5mm;
+    --logo: 17mm;
+    --brand-col: 32mm;
+    --sticker-col: 36mm;
+    --foot-pad-y: 2.6mm;
+  }
+
+  html, body { height: 100%; }
+  body { font-size: var(--fs); line-height: var(--lh); padding: var(--pad); }
+  .box { border-width: var(--bw); border-radius: var(--radius); padding: var(--bpad); }
+
+  .lbl { display: flex; flex-direction: column; gap: var(--gap); height: 100%; }
+  /* The receiver band takes every millimetre the paper has spare, so a taller page grows the
+     courier's sticker area rather than opening a dead gap above the footer (which is what
+     \`margin-top: auto\` on the footer used to do at exactly one paper size). */
+  .lbl-top { flex: 0 0 auto; display: grid; grid-template-columns: 1fr var(--brand-col); gap: var(--gap-in); }
+  .lbl-mid { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr var(--sticker-col); gap: var(--gap-in); }
+  .lbl-foot { flex: 0 0 auto; display: flex; gap: var(--gap-in); }
+
   .brand { display: flex; flex-direction: column; align-items: center;
            justify-content: center; gap: 1.6mm; text-align: center; }
-  .brand img { width: 17mm; height: 17mm; border-radius: 50%; object-fit: cover;
-               border: 0.35mm solid #c9c9c9; }
-  .brand .fallback { width: 17mm; height: 17mm; border-radius: 50%; background: #f2f2f4;
-                     border: 0.35mm solid #c9c9c9; display: flex; align-items: center;
-                     justify-content: center; font-size: 6mm; font-weight: 800; }
-  .brand .handle { font-size: 2.7mm; color: #5c5c5c; direction: ltr; }
-  .party-name { font-size: 4.4mm; font-weight: 700; margin-bottom: 2.5mm; }
+  .brand img { width: var(--logo); height: var(--logo); border-radius: 50%; object-fit: cover;
+               border: var(--bw) solid #c9c9c9; }
+  .brand .fallback { width: var(--logo); height: var(--logo); border-radius: 50%; background: #f2f2f4;
+                     border: var(--bw) solid #c9c9c9; display: flex; align-items: center;
+                     justify-content: center; font-size: calc(var(--logo) * 0.35); font-weight: 800; }
+  .brand .handle { font-size: var(--fs-handle); color: #5c5c5c; direction: ltr; }
+  .party-name { font-size: var(--fs-name); font-weight: 700; margin-bottom: var(--name-mb); }
   .party-name span { font-weight: 500; }
-  .lbl-mid .party-name { font-size: 5mm; }
-  .lbl-mid .addr { font-size: 3.7mm; font-weight: 500; }
+  .lbl-mid .party-name { font-size: var(--fs-name-mid); }
+  .lbl-mid .addr { font-size: var(--fs-addr); font-weight: 500; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 5mm; }
   .row-full { grid-column: 1 / -1; }
   .sticker { display: flex; align-items: center; justify-content: center;
-             text-align: center; color: #5c5c5c; font-size: 3.2mm; border-style: dashed; }
-  .lbl-foot { margin-top: auto; display: flex; gap: 3mm; }
-  .lbl-foot .box { flex: 1; padding: 2.6mm 4mm; display: flex; align-items: center; }
+             text-align: center; color: #5c5c5c; font-size: var(--fs-sticker); border-style: dashed; }
+  .lbl-foot .box { flex: 1; padding: var(--foot-pad-y) var(--bpad); display: flex; align-items: center; }
   .lbl-foot .box.tight { flex: 0 0 auto; }
+
+  /* --- Small paper: 100x150 thermal, A6 (105mm wide). ------------------------------------ */
+  @media (max-width: 120mm) {
+    :root {
+      --pad: 4mm; --gap: 2.5mm; --gap-in: 2mm; --bpad: 2.6mm; --radius: 1.5mm;
+      --lh: 1.6; --fs: 2.8mm; --fs-name: 3.5mm; --fs-name-mid: 3.9mm; --fs-addr: 3mm;
+      --fs-handle: 2.3mm; --fs-sticker: 2.6mm; --name-mb: 1.6mm;
+      --logo: 12mm; --brand-col: 20mm; --sticker-col: 24mm; --foot-pad-y: 1.8mm;
+    }
+    .grid2 { gap: 0 3mm; }
+  }
+
+  /* --- Large paper: A4 either way, Letter, anything else big in BOTH directions. --------- */
+  /* The height half of this query is load-bearing. Width alone let A5 landscape (210x148) in,
+     and 4.4mm type plus 14mm margins on a 148mm-tall sheet pushed the footer onto a second
+     page -- caught by printing the fixture to PDF and counting pages, not by reading the CSS. */
+  @media (min-width: 180mm) and (min-height: 180mm) {
+    :root {
+      --pad: 14mm; --gap: 6mm; --gap-in: 5mm; --bpad: 6mm; --radius: 2.5mm;
+      --fs: 4.4mm; --fs-name: 5.8mm; --fs-name-mid: 6.6mm; --fs-addr: 4.8mm;
+      --fs-handle: 3.4mm; --fs-sticker: 4.2mm; --name-mb: 3.5mm;
+      --logo: 24mm; --brand-col: 46mm; --sticker-col: 54mm; --foot-pad-y: 4mm;
+    }
+    .grid2 { gap: 0 8mm; }
+  }
+
+  /* --- Landscape: sender and receiver side by side. -------------------------------------- */
+  /* Stacking three full-width bands down a 100mm-tall page overflows onto a second sheet, and on
+     A4 landscape it stretches a five-field address across 270mm. Splitting the width in two
+     halves the height the label needs and keeps each block a readable column. */
+  @media (orientation: landscape) {
+    .lbl { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto; }
+    .lbl-top { grid-column: 1; grid-row: 1; }
+    .lbl-mid { grid-column: 2; grid-row: 1; }
+    .lbl-foot { grid-column: 1 / -1; grid-row: 2; }
+    /* Half the width is too little to also carry a side column, so the brand and the sticker
+       area drop below their own party instead of beside it. */
+    .lbl-top, .lbl-mid { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+    .lbl-mid { grid-template-rows: auto 1fr; }
+    .brand { flex-direction: row; gap: 2.5mm; }
+    .sticker { min-height: 14mm; }
+  }
+
+  /* Below A4 landscape the half-width column cannot hold two fields per row. */
+  @media (orientation: landscape) and (max-width: 240mm) {
+    .grid2 { grid-template-columns: 1fr; }
+  }
+
+  /* --- Short paper (100/105mm tall: thermal + A6, both landscape). ----------------------- */
+  /* Last on purpose: these override whatever width bucket already matched, because on a short
+     page height is the binding constraint, not width. */
+  @media (max-height: 130mm) {
+    :root {
+      --pad: 4mm; --gap: 2.5mm; --gap-in: 2mm; --bpad: 2.6mm; --radius: 1.5mm;
+      --lh: 1.5; --fs: 2.9mm; --fs-name: 3.6mm; --fs-name-mid: 4mm; --fs-addr: 3.1mm;
+      --fs-handle: 2.3mm; --fs-sticker: 2.6mm; --name-mb: 1.6mm;
+      --logo: 13mm; --brand-col: 22mm; --sticker-col: 26mm; --foot-pad-y: 1.8mm;
+    }
+    .grid2 { gap: 0 3mm; }
+    .sticker { min-height: 9mm; }
+  }
 `;
 
 /**
@@ -118,5 +218,5 @@ export function buildLabelDocument(
   </div>
 </div>`;
 
-  return documentShell(body, 'A5', LABEL_CSS);
+  return documentShell(body, 'auto', LABEL_CSS);
 }

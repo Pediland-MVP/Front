@@ -75,7 +75,9 @@ no longer exists.
 
 **New files**
 - `apps/dashboard/src/components/Commerce/Orders/print/buildLabelDocument.ts` (+ `.test.ts`) — A5
-  shipping label builder.
+  shipping label builder. **Superseded 2026-09-10**: no longer A5-only — it now sizes itself to
+  whatever paper the print dialog is set to. See
+  [`2026-09-10-printLabelResponsivePaper.update.md`](./2026-09-10-printLabelResponsivePaper.update.md).
 - `apps/dashboard/src/components/Commerce/Orders/print/buildInvoiceDocument.ts` (+ `.test.ts`) — A4
   invoice builder.
 - `apps/dashboard/src/components/Commerce/Orders/print/documentStyles.ts` — shared print CSS.
@@ -121,7 +123,10 @@ already covers — this doc is Front-only file list.
   `CheckoutPage`, `excelExportSessions`, and others across `app/(Auth)`/`app/(Console)`.
 - **Not clicked through in a browser.** No one has opened the print preview or the print dialog
   itself against a real order, and the printed A5/A4 layout has not been checked against an actual
-  printer or PDF export.
+  printer or PDF export. *(Partly closed 2026-09-10: the label is now rendered to PDF in Chromium
+  at ten paper/orientation combinations and page-counted — see
+  [`2026-09-10-printLabelResponsivePaper.update.md`](./2026-09-10-printLabelResponsivePaper.update.md).
+  Still no real printer, and the invoice remains unverified.)*
 
 ## 2026-09-09 (later the same day) — Rearchitected to per-workspace
 

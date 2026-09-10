@@ -55,8 +55,30 @@ const order: OrderDetailView = {
 };
 
 describe('buildLabelDocument', () => {
-  it('sets an A5 page box', () => {
-    expect(buildLabelDocument(order, LABELS, 'یزد', 'یزد')).toContain('size: A5 portrait');
+  it('leaves the page box to the print dialog instead of pinning one paper', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('size: auto');
+    expect(html).not.toContain('A5 portrait');
+  });
+
+  it('fills whatever page it lands on, with no hard-coded page height', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // The old layout was `height: 190mm` -- A5 minus its margins, and wrong on every other
+    // paper. Percentage height off `html, body { height: 100% }` is what makes it follow.
+    expect(html).toContain('height: 100%');
+    expect(html).not.toContain('190mm');
+  });
+
+  it('re-tunes itself for small, large, short and landscape paper', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // In print the media-query viewport IS the page box, so these four buckets are what makes
+    // 100x150 thermal, A6, A5, A4 and both orientations each get their own sizing.
+    expect(html).toContain('@media (max-width: 120mm)'); // 100x150 thermal, A6 portrait
+    // Both dimensions, not just width: A5 landscape is 210mm wide but only 148mm tall, and
+    // scaling it up like an A4 overflowed the footer onto a second page.
+    expect(html).toContain('@media (min-width: 180mm) and (min-height: 180mm)');
+    expect(html).toContain('@media (orientation: landscape)'); // sender/receiver side by side
+    expect(html).toContain('@media (max-height: 130mm)'); // short paper wins over width
   });
 
   it('prints the shop instagram name as the sender, as-is (no fallback reimplemented)', () => {

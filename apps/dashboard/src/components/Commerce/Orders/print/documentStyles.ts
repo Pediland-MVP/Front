@@ -36,15 +36,24 @@ const BASE_CSS = `
  *
  * Everything is sized in millimetres so the output does not depend on the screen's
  * pixel density — the same string prints identically from a 1x laptop and a 4K monitor.
+ *
+ * `page` is the paper the document is COMMITTED to. `'auto'` commits to nothing: the browser's
+ * print dialog decides, and the document's own CSS is expected to lay itself out against
+ * whatever comes back (see `buildLabelDocument`). A named size instead pins the paper, which is
+ * what a fixed-format document like the invoice wants.
  */
-export function documentShell(body: string, page: 'A5' | 'A4', extraCss: string): string {
-  const margin = page === 'A5' ? '0' : '10mm';
+export function documentShell(body: string, page: 'A5' | 'A4' | 'auto', extraCss: string): string {
+  // A named page gets the shell's own margin; `auto` gets none, because a document that sizes
+  // itself to the paper has to own its edge spacing too (a fixed mm margin would eat a third of
+  // a 100x150 thermal label while barely showing on A4).
+  const pageBox = page === 'auto' ? 'auto' : `${page} portrait`;
+  const margin = page === 'A4' ? '10mm' : '0';
   return `<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
 <style>
-@page { size: ${page} portrait; margin: ${margin}; }
+@page { size: ${pageBox}; margin: ${margin}; }
 ${BASE_CSS}
 ${extraCss}
 </style>
