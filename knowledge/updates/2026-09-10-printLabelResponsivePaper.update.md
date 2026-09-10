@@ -31,11 +31,11 @@ reason `size: auto` is worth having: pinning `A5 portrait` would force every que
 
 Three mechanisms carry the layout:
 
-1. **Tokens.** Every dimension (`--pad`, `--gap`, `--fs`, `--logo`, `--brand-col`, …) is a custom
-   property on `:root`. A paper bucket re-tunes the whole label by overriding a dozen values
-   instead of restating the layout once per size. The base values ARE the old A5 numbers, and at
-   148×210 with `--pad: 10mm` the old `height: 190mm` and the new `height: 100%` are the same
-   number — **A5 portrait output is byte-for-byte the layout it always was.**
+1. **Two scale units, and everything is a multiple of one of them.** `--su` (space) is
+   `calc(100vmin / 148)` — pure proportion, no floor, no ceiling. `--tu` (type) is
+   `max(0.82mm, 100vmin / 148)` — the same proportion with a legibility floor. 148 is A5
+   portrait's short edge, so both are *exactly* 1mm there and every multiplier in the file is
+   literally the millimetre number the label used to hard-code.
 2. **The receiver band absorbs the slack.** `.lbl-mid { flex: 1 }` instead of
    `.lbl-foot { margin-top: auto }`, so a taller sheet grows the courier's sticker area rather
    than opening a dead gap above the footer.
@@ -45,15 +45,37 @@ Three mechanisms carry the layout:
    height the label needs (which is what makes a 150×100 roll fit) and stops A4 landscape
    stretching one address across the full sheet.
 
-### The buckets
+### Why not size buckets — the A3-and-up failure
 
-| Query | Catches | Effect |
+The first version of this used five width/height media-query buckets. It was wrong upward, and
+visibly so: **A3, A2, A1 and A0 all matched the same `min-width: 180mm` rule**, so an A0 sheet got
+A4-sized type — a small label marooned in the middle of a sheet sixteen times its area. Buckets
+step; they do not scale.
+
+Scale is now continuous and structure alone is by breakpoint. Measured body type, one Chromium
+render per sheet:
+
+| Sheet | short edge | body type |
 |---|---|---|
-| `max-width: 120mm` | 100×150 thermal P, A6 P | ~20% smaller type, 12mm logo, 4mm margins |
-| `min-width: 180mm` **and** `min-height: 180mm` | A4 P/L, Letter P/L | ~30% larger type, 24mm logo, 14mm margins |
-| `orientation: landscape` | every landscape sheet | two-column, brand/sticker below |
-| `orientation: landscape` + `max-width: 240mm` | all landscape except A4 L | address fields go one-per-row |
-| `max-height: 130mm` | 150×100 thermal L, A6 L | compact; **last in the file on purpose** — on a short sheet height is the binding constraint, so this overrides whatever width bucket already matched |
+| 100×150 thermal / A7 / A6 | 74–105mm | 2.79mm ← floor holding |
+| A5 | 148mm | **3.40mm** ← the original, unchanged |
+| A4 | 210mm | 4.83mm |
+| Letter | 216mm | 4.96mm |
+| A3 | 297mm | 6.83mm |
+| A2 | 420mm | 9.65mm |
+| A1 | 594mm | 13.65mm |
+| A0 | 841mm | 19.32mm |
+
+Each A-step is √2 from the last, which is what "the same design, photographically resized" means.
+Below A6 the `--tu` floor deliberately breaks proportion the other way: a courier reads a thermal
+label from the same distance as an A4 one, so type is the one thing that must not keep shrinking.
+That is also why the `max-height: 130mm` query tightens leading — it pays for the floor holding
+type above its proportional size on a short sheet.
+
+**The floor is also the failure mode.** The label prints inside a hidden 0×0 iframe. If a browser
+ever resolved `vmin` against that iframe instead of the page box, `max()` still yields 0.82mm and
+the label prints small-but-correct instead of collapsing to zero-height text. Chromium resolves it
+against the page box (measured below); the floor means we do not have to bet on it.
 
 `documentShell()`'s `page` parameter gained `'auto'` alongside `'A5' | 'A4'`. `'auto'` also means
 zero `@page` margin, because a document that sizes itself to the paper has to own its edge
@@ -74,30 +96,29 @@ picks the paper in the browser's own print dialog, where they already were.
 
 ## Verification
 
-- `vitest run src/components/Commerce/Orders/print/` — 37 pass (16 label, 21 invoice).
+- `vitest run src/components/Commerce/Orders/print/` — 38 pass (17 label, 21 invoice).
 - `tsc --noEmit` — 0 errors in `Orders/print/`. (App-wide errors are the pre-existing
   `@hookform/resolvers` zod skew and e2e/playwright noise, untouched by this change.)
-- **Rendered to real PDF in Chromium** (Playwright `page.pdf()` at each paper size, two fixtures:
-  a normal order and one with a 100-character address, a 28-character recipient name and a long
-  shipping-method title), then **page-counted straight out of the PDF** — more than one page means
-  it overflowed:
+- **Rendered to real PDF in Chromium** (Playwright `page.pdf()`, two fixtures: a normal order and
+  one with a 100-character address, a 28-character recipient name and a long shipping-method
+  title), then **page-counted straight out of the PDF** — more than one page means it overflowed.
+  100×150 thermal, A7, A6, A5, A4, Letter, A3, A2, A1, A0 — **portrait and landscape, both
+  fixtures: all one page** (except A7, see Known limits).
+- Body type was **measured** on each sheet in the same pass (the table under "Why not size
+  buckets"), which is what proves `vmin` resolves against the page box and not the iframe.
+- A5 portrait was **pixel-diffed against a render from before this change**: every box and every
+  baseline lands identically. The only difference is antialiasing halo from a **−0.066%** scale
+  deviation, because the browser rounds the page box to whole CSS pixels (148mm → 559px, not
+  559.37px). That is 0.007mm on a 10mm margin. Measured, not assumed — the label is *not*
+  bit-identical at A5, it is geometrically identical to within that rounding.
+- A0 portrait and A3 landscape were rasterised and looked at, not just counted, to confirm the
+  design is proportionally the same at 8× the linear size.
 
-  | Sheet | Portrait | Landscape |
-  |---|---|---|
-  | 100×150 thermal | 1 page ✅ | 1 page ✅ |
-  | A6 (105×148) | 1 page ✅ | 1 page ✅ |
-  | A5 (148×210) | 1 page ✅ | 1 page ✅ |
-  | A4 (210×297) | 1 page ✅ | 1 page ✅ |
-  | Letter (216×279) | 1 page ✅ | 1 page ✅ |
-
-  Both fixtures, all ten combinations. Four of them (thermal P, A5 P, A6 L long, A4 L long) were
-  also rasterised and looked at, not just counted.
-
-- **This is how the A5-landscape bug was caught.** The large bucket started as `min-width: 180mm`
-  alone. A5 landscape is 210mm wide but only 148mm tall, so it took the A4 treatment — 4.4mm type
-  and 14mm margins on a 148mm sheet — and pushed the footer onto a second page. Reading the CSS
-  did not show it; printing it and counting pages did. Hence `and (min-height: 180mm)`: scale up
-  only when the sheet is big in **both** directions.
+- **Two bugs this method caught that reading the CSS did not.** (1) The original large bucket was
+  `min-width: 180mm` alone; A5 landscape is 210mm wide but only 148mm tall, took the A4 treatment
+  and pushed the footer onto a second page. (2) The bucket approach itself — A3/A2/A1/A0 all
+  matching one rule — only became obvious once type size was measured per sheet rather than eyeballed
+  at A4 and below.
 
 ### Deployed to back2 test (2026-09-10)
 

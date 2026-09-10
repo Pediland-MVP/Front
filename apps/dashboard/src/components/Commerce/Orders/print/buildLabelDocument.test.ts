@@ -58,7 +58,9 @@ describe('buildLabelDocument', () => {
   it('leaves the page box to the print dialog instead of pinning one paper', () => {
     const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
     expect(html).toContain('size: auto');
-    expect(html).not.toContain('A5 portrait');
+    // The pin itself, not the words: the CSS comments legitimately cite A5 portrait as the
+    // reference sheet both scale units are calibrated to.
+    expect(html).not.toContain('size: A5');
   });
 
   it('fills whatever page it lands on, with no hard-coded page height', () => {
@@ -69,16 +71,28 @@ describe('buildLabelDocument', () => {
     expect(html).not.toContain('190mm');
   });
 
-  it('re-tunes itself for small, large, short and landscape paper', () => {
+  it('scales continuously with the sheet instead of stepping between presets', () => {
     const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
-    // In print the media-query viewport IS the page box, so these four buckets are what makes
-    // 100x150 thermal, A6, A5, A4 and both orientations each get their own sizing.
-    expect(html).toContain('@media (max-width: 120mm)'); // 100x150 thermal, A6 portrait
-    // Both dimensions, not just width: A5 landscape is 210mm wide but only 148mm tall, and
-    // scaling it up like an A4 overflowed the footer onto a second page.
-    expect(html).toContain('@media (min-width: 180mm) and (min-height: 180mm)');
-    expect(html).toContain('@media (orientation: landscape)'); // sender/receiver side by side
-    expect(html).toContain('@media (max-height: 130mm)'); // short paper wins over width
+    // In print the media viewport IS the page box, so vmin is the short edge of the real paper.
+    // Space scales purely; type scales but never below a legible floor.
+    expect(html).toContain('--su: calc(100vmin / 148)');
+    expect(html).toContain('--tu: max(0.82mm, 100vmin / 148)');
+    // Every dimension is a multiple of one of the two units -- no bare mm sizes left to freeze
+    // the label at one paper size. (0.35/2.5/etc appear only inside calc() multipliers.)
+    expect(html).toContain('--pad: calc(10 * var(--su))');
+    expect(html).toContain('--fs: calc(3.4 * var(--tu))');
+    expect(html).toContain('--logo: calc(17 * var(--su))');
+  });
+
+  it('keeps only structural breakpoints, not size ones', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // Layout decisions that genuinely are not continuous stay as queries...
+    expect(html).toContain('@media (orientation: landscape)');
+    expect(html).toContain('@media (max-height: 130mm)');
+    // ...but the old width-bucket presets are gone. These are what made A3/A2/A1/A0 all print
+    // A4-sized type on a much bigger sheet: every one of them matched the same rule.
+    expect(html).not.toContain('max-width: 120mm');
+    expect(html).not.toContain('min-width: 180mm');
   });
 
   it('prints the shop instagram name as the sender, as-is (no fallback reimplemented)', () => {

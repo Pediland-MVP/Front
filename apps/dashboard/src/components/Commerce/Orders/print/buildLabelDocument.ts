@@ -16,36 +16,70 @@ export function orderReference(orderId: string): string {
 }
 
 /**
- * Every dimension is a custom property so a paper bucket can re-tune the whole label by
- * overriding a dozen tokens, instead of restating the layout once per size. The base values are
- * the A5 portrait label this started as -- at 148x210 with `--pad: 10mm` the old hard-coded
- * `height: 190mm` and `height: 100%` are the same number, so A5 output is unchanged.
+ * The label sizes itself to the sheet it is printed on.
  *
- * The buckets below are plain media queries because in print the viewport IS the page box: a
- * `max-width: 120mm` query matches the paper the user picked in the dialog, not the screen.
- * That is the whole reason `@page { size: auto }` is worth it -- pinning `A5 portrait` would
- * force every query to one answer.
+ * In print the media viewport IS the page box, so `vmin` is the short edge of the actual paper
+ * the user chose in the dialog. Two units are derived from it (`--su` for space, `--tu` for
+ * type) and every dimension is a multiple of one of them, which makes the whole label one
+ * design resized -- continuously -- rather than a set of stepped presets. That is the whole
+ * reason `@page { size: auto }` is worth having: pinning `A5 portrait` would freeze `vmin` at
+ * one value and freeze the label with it.
+ *
+ * Both units equal 1mm at A5 portrait, so every multiplier below is literally the millimetre
+ * number this label used to hard-code, and A5 keeps the layout it always had (to within the
+ * -0.07% the browser introduces by rounding the page box to whole CSS pixels).
  */
 const LABEL_CSS = `
+  /*
+   * SCALE IS CONTINUOUS, STRUCTURE IS BY BREAKPOINT.
+   *
+   * In print the viewport IS the page box, so \`vmin\` is the short edge of the actual sheet.
+   * Two units are derived from it and EVERY dimension below is a multiple of one of them, so
+   * the label is one design photographically resized to the paper -- not a handful of stepped
+   * presets. Buckets were the first attempt and they visibly failed upward: A3/A2/A1/A0 all
+   * matched the same ">=180mm" rule and printed A4-sized type on a sheet up to four times
+   * wider, which reads as a small label marooned in the middle of a big sheet.
+   *
+   * Both units are 1mm at A5 portrait (148mm short edge), so every multiplier below is literally
+   * the millimetre value this label used to hard-code and A5 keeps the layout it always had. The
+   * one deviation is -0.07%: the browser rounds the page box to whole CSS pixels (148mm -> 559px,
+   * not 559.37px), which is 0.007mm on a 10mm margin. Measured, not assumed.
+   */
   :root {
-    --pad: 10mm;          /* page edge -> content */
-    --gap: 4mm;           /* between the three bands */
-    --gap-in: 3mm;        /* inside a band */
-    --bpad: 4mm;          /* inside a box */
-    --radius: 2mm;
-    --bw: 0.35mm;
+    /* Space, boxes and the logo: pure proportion, no floor and no ceiling. Margins should
+       always be the same FRACTION of the sheet, which is what keeps a 57mm margin on A0 and a
+       6.8mm one on a thermal label both look like the same design. 148 is A5 portrait's short
+       edge, so this is EXACTLY 1mm there -- not a rounded decimal that would drift. */
+    --su: calc(100vmin / 148);
+    /* Type: same proportion, but never below a legible floor. A courier reads a 100x150 thermal
+       label from the same distance as an A4 one, so text is the one thing that must NOT shrink
+       linearly all the way down. The floor only ever engages below ~A6; from A5 up the two
+       units are identical and the whole label scales together.
+       The floor doubles as the failure mode: if a browser ever resolved \`vmin\` against the
+       hidden 0x0 print iframe instead of the page box, \`max()\` still yields 0.82mm and the
+       label prints small-but-correct rather than collapsing to zero-height text. */
+    --tu: max(0.82mm, 100vmin / 148);
+
+    --pad: calc(10 * var(--su));      /* page edge -> content */
+    --gap: calc(4 * var(--su));       /* between the three bands */
+    --gap-in: calc(3 * var(--su));    /* inside a band */
+    --bpad: calc(4 * var(--su));      /* inside a box */
+    --radius: calc(2 * var(--su));
+    --bw: calc(0.35 * var(--su));
+    --name-mb: calc(2.5 * var(--su));
+    --foot-pad-y: calc(2.6 * var(--su));
+    --col-gap: calc(5 * var(--su));
+    --logo: calc(17 * var(--su));
+    --brand-col: calc(32 * var(--su));
+    --sticker-col: calc(36 * var(--su));
+
     --lh: 1.85;
-    --fs: 3.4mm;
-    --fs-name: 4.4mm;
-    --fs-name-mid: 5mm;   /* the receiver reads bigger than the sender on purpose */
-    --fs-addr: 3.7mm;
-    --fs-handle: 2.7mm;
-    --fs-sticker: 3.2mm;
-    --name-mb: 2.5mm;
-    --logo: 17mm;
-    --brand-col: 32mm;
-    --sticker-col: 36mm;
-    --foot-pad-y: 2.6mm;
+    --fs: calc(3.4 * var(--tu));
+    --fs-name: calc(4.4 * var(--tu));
+    --fs-name-mid: calc(5 * var(--tu));   /* the receiver reads bigger than the sender on purpose */
+    --fs-addr: calc(3.7 * var(--tu));
+    --fs-handle: calc(2.7 * var(--tu));
+    --fs-sticker: calc(3.2 * var(--tu));
   }
 
   html, body { height: 100%; }
@@ -61,7 +95,7 @@ const LABEL_CSS = `
   .lbl-foot { flex: 0 0 auto; display: flex; gap: var(--gap-in); }
 
   .brand { display: flex; flex-direction: column; align-items: center;
-           justify-content: center; gap: 1.6mm; text-align: center; }
+           justify-content: center; gap: calc(1.6 * var(--su)); text-align: center; }
   .brand img { width: var(--logo); height: var(--logo); border-radius: 50%; object-fit: cover;
                border: var(--bw) solid #c9c9c9; }
   .brand .fallback { width: var(--logo); height: var(--logo); border-radius: 50%; background: #f2f2f4;
@@ -72,42 +106,22 @@ const LABEL_CSS = `
   .party-name span { font-weight: 500; }
   .lbl-mid .party-name { font-size: var(--fs-name-mid); }
   .lbl-mid .addr { font-size: var(--fs-addr); font-weight: 500; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 5mm; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 var(--col-gap); }
   .row-full { grid-column: 1 / -1; }
   .sticker { display: flex; align-items: center; justify-content: center;
              text-align: center; color: #5c5c5c; font-size: var(--fs-sticker); border-style: dashed; }
   .lbl-foot .box { flex: 1; padding: var(--foot-pad-y) var(--bpad); display: flex; align-items: center; }
   .lbl-foot .box.tight { flex: 0 0 auto; }
 
-  /* --- Small paper: 100x150 thermal, A6 (105mm wide). ------------------------------------ */
-  @media (max-width: 120mm) {
-    :root {
-      --pad: 4mm; --gap: 2.5mm; --gap-in: 2mm; --bpad: 2.6mm; --radius: 1.5mm;
-      --lh: 1.6; --fs: 2.8mm; --fs-name: 3.5mm; --fs-name-mid: 3.9mm; --fs-addr: 3mm;
-      --fs-handle: 2.3mm; --fs-sticker: 2.6mm; --name-mb: 1.6mm;
-      --logo: 12mm; --brand-col: 20mm; --sticker-col: 24mm; --foot-pad-y: 1.8mm;
-    }
-    .grid2 { gap: 0 3mm; }
-  }
+  /* ------------------------------------------------------------------------------------- */
+  /* Below here: STRUCTURE only. These are the decisions that genuinely are not continuous  */
+  /* -- you cannot half-rotate a layout -- so they stay breakpoints while scale does not.   */
+  /* ------------------------------------------------------------------------------------- */
 
-  /* --- Large paper: A4 either way, Letter, anything else big in BOTH directions. --------- */
-  /* The height half of this query is load-bearing. Width alone let A5 landscape (210x148) in,
-     and 4.4mm type plus 14mm margins on a 148mm-tall sheet pushed the footer onto a second
-     page -- caught by printing the fixture to PDF and counting pages, not by reading the CSS. */
-  @media (min-width: 180mm) and (min-height: 180mm) {
-    :root {
-      --pad: 14mm; --gap: 6mm; --gap-in: 5mm; --bpad: 6mm; --radius: 2.5mm;
-      --fs: 4.4mm; --fs-name: 5.8mm; --fs-name-mid: 6.6mm; --fs-addr: 4.8mm;
-      --fs-handle: 3.4mm; --fs-sticker: 4.2mm; --name-mb: 3.5mm;
-      --logo: 24mm; --brand-col: 46mm; --sticker-col: 54mm; --foot-pad-y: 4mm;
-    }
-    .grid2 { gap: 0 8mm; }
-  }
-
-  /* --- Landscape: sender and receiver side by side. -------------------------------------- */
-  /* Stacking three full-width bands down a 100mm-tall page overflows onto a second sheet, and on
-     A4 landscape it stretches a five-field address across 270mm. Splitting the width in two
-     halves the height the label needs and keeps each block a readable column. */
+  /* Landscape: sender and receiver side by side. Stacking three full-width bands down a
+     100mm-tall sheet overflows onto a second one, and on A4 landscape it stretches a
+     five-field address across 270mm. Splitting the width halves the height the label needs
+     and keeps each block a readable column. */
   @media (orientation: landscape) {
     .lbl { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto; }
     .lbl-top { grid-column: 1; grid-row: 1; }
@@ -117,27 +131,21 @@ const LABEL_CSS = `
        area drop below their own party instead of beside it. */
     .lbl-top, .lbl-mid { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
     .lbl-mid { grid-template-rows: auto 1fr; }
-    .brand { flex-direction: row; gap: 2.5mm; }
-    .sticker { min-height: 14mm; }
+    .brand { flex-direction: row; gap: calc(2.5 * var(--su)); }
+    .sticker { min-height: calc(14 * var(--su)); }
   }
 
-  /* Below A4 landscape the half-width column cannot hold two fields per row. */
+  /* Below A4 landscape the half-width column cannot hold two fields per row. This is a
+     ratio question, not a size one -- it is about how many columns fit, so it stays a query. */
   @media (orientation: landscape) and (max-width: 240mm) {
     .grid2 { grid-template-columns: 1fr; }
   }
 
-  /* --- Short paper (100/105mm tall: thermal + A6, both landscape). ----------------------- */
-  /* Last on purpose: these override whatever width bucket already matched, because on a short
-     page height is the binding constraint, not width. */
+  /* Short sheets (thermal landscape, A6 landscape). These are exactly the sizes where the type
+     floor above is holding text ABOVE its proportional size, so the leading has to come in to
+     pay for it -- otherwise the floor is what pushes the footer onto a second sheet. */
   @media (max-height: 130mm) {
-    :root {
-      --pad: 4mm; --gap: 2.5mm; --gap-in: 2mm; --bpad: 2.6mm; --radius: 1.5mm;
-      --lh: 1.5; --fs: 2.9mm; --fs-name: 3.6mm; --fs-name-mid: 4mm; --fs-addr: 3.1mm;
-      --fs-handle: 2.3mm; --fs-sticker: 2.6mm; --name-mb: 1.6mm;
-      --logo: 13mm; --brand-col: 22mm; --sticker-col: 26mm; --foot-pad-y: 1.8mm;
-    }
-    .grid2 { gap: 0 3mm; }
-    .sticker { min-height: 9mm; }
+    :root { --lh: 1.5; }
   }
 `;
 
