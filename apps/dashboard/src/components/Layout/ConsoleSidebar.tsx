@@ -76,10 +76,12 @@ const generateData = (
           title: t('productsTaxonomy'),
           url: '/products/taxonomy',
         },
-        {
-          title: t('productsImport'),
-          url: '/products/import',
-        },
+        // Bulk import (وارد کردن گروهی) is hidden for now -- the page itself answers 404 and the
+        // backend route is unregistered. Restore this entry when import comes back.
+        // {
+        //   title: t('productsImport'),
+        //   url: '/products/import',
+        // },
         {
           title: t('productsShipping'),
           url: '/products/shipping',
