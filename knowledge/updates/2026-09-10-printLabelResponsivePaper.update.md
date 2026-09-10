@@ -122,6 +122,10 @@ picks the paper in the browser's own print dialog, where they already were.
 
 ### Deployed to back2 test (2026-09-10)
 
+> Deployed **twice**: first the bucketed version, then this continuous-scale one after the
+> A3-and-up problem was spotted. Both went out by the same route; the notes below apply to both.
+
+
 Front-only change, so **only `front-test` was rebuilt** — `back-test`, `back-admin-test` and
 `front-admin-test` were left running and untouched (no `sync-deploy-all.sh`, which would have
 rebuilt all four for nothing on a RAM-tight box).
@@ -148,3 +152,11 @@ rebuilt all four for nothing on a RAM-tight box).
 - **Still not printed on paper.** Everything above is Chromium's own print engine via PDF, which
   is exactly what the feature uses (`window.print()` → print-to-PDF), but no one has put a real
   sheet through a real printer, and Firefox/Safari print engines were not exercised.
+
+## 2026-09-10 (later) — redeployed with continuous scaling
+
+Second `front-test` rebuild by the identical route (rsync → stop → build alone in `screen`
+(`EXIT_CODE:0`) → up). Verified: `127.0.0.1:42001` and the LB `Host: beftest-xtest-1059.befroosh.app`
+both HTTP 307; `100vmin / 148` and `max(0.82mm` both present in the shipped SSR + client chunks;
+`min-width: 180mm` (the old bucket) returns **no matches anywhere** in the built output, so the
+stepped version is fully gone from the box.
