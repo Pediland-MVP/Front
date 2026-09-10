@@ -99,6 +99,27 @@ picks the paper in the browser's own print dialog, where they already were.
   did not show it; printing it and counting pages did. Hence `and (min-height: 180mm)`: scale up
   only when the sheet is big in **both** directions.
 
+### Deployed to back2 test (2026-09-10)
+
+Front-only change, so **only `front-test` was rebuilt** — `back-test`, `back-admin-test` and
+`front-admin-test` were left running and untouched (no `sync-deploy-all.sh`, which would have
+rebuilt all four for nothing on a RAM-tight box).
+
+- Synced by `rsync` into `SourcesTest/Front` (that box's Front checkout is rsync-fed, not
+  git-push-fed). A dry run first showed the transfer set was exactly this commit's files and
+  nothing else. **Gotcha worth remembering:** in a git *worktree* `.git` is a FILE, not a
+  directory, so an `--exclude '.git/'` (trailing slash) does not match it and `rsync --delete`
+  will happily delete the server's entire `.git` directory. Caught by the dry run.
+- Stopped `front-test`, built the image alone in a detached `screen` (`EXIT_CODE:0`), then brought
+  it up — the build discipline in the box's own `/root/CLAUDE.md` §2.1.
+- Verified by hand, not by the script's say-so: `127.0.0.1:42001` → HTTP 307, and through the LB
+  with `Host: beftest-xtest-1059.befroosh.app` → HTTP 307.
+- **Proved the new CSS is in the shipped bundle**, not just that the container restarted: all four
+  markers (`size: auto`, `min-height: 180mm`, `orientation: landscape`, `max-height: 130mm`) are
+  present in both the SSR chunk and the client chunk. `A5 portrait` / `height: 190mm` survive only
+  inside the `.js.map` source map — this file's own JSDoc quotes them as history — and appear
+  nowhere in the executable chunk.
+
 ### Known limits
 
 - **A7 (74×105) overflows to two pages.** Two full postal addresses plus a sticker area do not fit
