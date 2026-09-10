@@ -68,10 +68,10 @@ export const NavBottom = () => {
       isActive: (path: string) => path.startsWith('/automations/add'),
     },
     {
-      href: '/orders',
+      href: '/products/orders',
       icon: ShoppingBagIcon,
       labelKey: 'orders',
-      isActive: (path: string) => path === '/orders',
+      isActive: (path: string) => path.startsWith('/products/orders'),
     },
     {
       isProfile: true,

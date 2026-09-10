@@ -20,7 +20,6 @@ import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { LifebuoyIcon } from '@phosphor-icons/react/dist/ssr/Lifebuoy';
 import { LightningIcon } from '@phosphor-icons/react/dist/ssr/Lightning';
-import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
 import { SlidersIcon } from '@phosphor-icons/react/dist/ssr/Sliders';
 import { UsersThreeIcon } from '@phosphor-icons/react/dist/ssr/UsersThree';
 import { LogoSlogan } from '../Global/LogoSlogan';
@@ -96,12 +95,8 @@ const generateData = (
         },
       ],
     },
-    {
-      title: t('ordersList'),
-      url: '/orders',
-      icon: ShoppingBagIcon,
-      isActive: true,
-    },
+    // The top-level orders entry is removed -- shop orders now live under
+    // Products > سفارش‌های فروشگاه (/products/orders).
     // {
     //   title: t("instagramConnections"),
     //   url: "#",
