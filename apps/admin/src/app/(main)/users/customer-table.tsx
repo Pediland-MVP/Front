@@ -55,8 +55,8 @@ export default function CustomerTable({
   onCategoryChange,
   howFoundUs,
   onHowFoundUsChange,
-  actionDate,
-  onActionDateChange,
+  createDate,
+  onCreateDateChange,
   isIgTokenValid,
   onIgTokenValidChange,
   labelId,
@@ -88,8 +88,8 @@ export default function CustomerTable({
   onCategoryChange: (categories: string[]) => void;
   howFoundUs: string[];
   onHowFoundUsChange: (howFoundUs: string[]) => void;
-  actionDate: Date | null;
-  onActionDateChange: (date: Date | null) => void;
+  createDate: Date | null;
+  onCreateDateChange: (date: Date | null) => void;
   isIgTokenValid: string;
   onIgTokenValidChange: (value: string) => void;
   labelId: string | undefined;
@@ -189,8 +189,8 @@ export default function CustomerTable({
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex shrink-0 items-center gap-1.5">
             <DatePicker
-              date={actionDate ?? undefined}
-              onChange={(date) => onActionDateChange(date ?? null)}
+              date={createDate ?? undefined}
+              onChange={(date) => onCreateDateChange(date ?? null)}
             />
 
             <FilterCategory size="sm" value={categories} onChange={onCategoryChange} />

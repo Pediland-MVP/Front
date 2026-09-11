@@ -4,7 +4,7 @@
 import { fetcher } from '@/hooks/swr/api-client';
 import { useKams } from '@/hooks/use-kams';
 import { SmsData } from '@/types/sms';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useSWR from 'swr';
 import { useDebounce } from 'use-debounce';
 import { useLabelsList } from '../labels/use-labels';
@@ -31,7 +31,7 @@ export default function CustomersPageClient() {
   const [customerAdmins, setCustomerAdmins] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [howFoundUs, setHowFoundUs] = useState<string[]>([]);
-  const [actionDate, setActionDate] = useState<Date | null>(null);
+  const [createDateFilter, setCreateDateFilter] = useState<Date | null>(null);
   const [isIgTokenValid, setIsIgTokenValid] = useState('');
   const [labelId, setLabelId] = useState<string | undefined>(undefined);
   const [showDeleteFlagged, setShowDeleteFlagged] = useState(false);
@@ -54,7 +54,14 @@ export default function CustomersPageClient() {
     return fakeDate.toISOString();
   };
 
-  const actionDateQuery = actionDate ? `&actionDate=${fakeUTCISOString(actionDate)}` : '';
+  let createDateQuery = '';
+  if (createDateFilter) {
+    const dayStart = new Date(createDateFilter);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(createDateFilter);
+    dayEnd.setHours(23, 59, 59, 999);
+    createDateQuery = `&createDateStart=${fakeUTCISOString(dayStart)}&createDateEnd=${fakeUTCISOString(dayEnd)}`;
+  }
 
   const categoryQuery = categories.length > 0 ? `&categoryIds=${categories.join(',')}` : '';
   const howFoundUsQuery = howFoundUs.length > 0 ? `&howFoundUs=${howFoundUs.join(',')}` : '';
@@ -71,14 +78,10 @@ export default function CustomersPageClient() {
     error: customersError,
     mutate: mutateCustomers,
   } = useSWR(
-    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${howFoundUsQuery}${actionDateQuery}${igTokenQuery}${labelIdQuery}${deleteFlaggedQuery}${sortQuery}&panelMode=${panelMode}`,
+    `/users?limit=${limit}&page=${page}${searchQuery}${statusQuery}${adminQuery}${categoryQuery}${howFoundUsQuery}${createDateQuery}${igTokenQuery}${labelIdQuery}${deleteFlaggedQuery}${sortQuery}&panelMode=${panelMode}`,
     fetcher,
     { keepPreviousData: true },
   );
-
-  useEffect(() => {
-    console.log('action date..', actionDateQuery);
-  }, [actionDateQuery]);
 
   const customers = customersData?.items || [];
   const meta = customersData?.meta;
@@ -139,8 +142,8 @@ export default function CustomersPageClient() {
         onCategoryChange={setCategories}
         howFoundUs={howFoundUs}
         onHowFoundUsChange={setHowFoundUs}
-        actionDate={actionDate}
-        onActionDateChange={setActionDate}
+        createDate={createDateFilter}
+        onCreateDateChange={setCreateDateFilter}
         isIgTokenValid={isIgTokenValid}
         onIgTokenValidChange={setIsIgTokenValid}
         labelId={labelId}
