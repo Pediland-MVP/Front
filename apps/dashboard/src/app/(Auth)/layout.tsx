@@ -1,7 +1,7 @@
 import { SWRProvider } from '@/hooks/swr/api-client';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { Toaster } from 'sonner';
 
 import { AuthProvider } from '@/components/Providers/AuthProvider';
@@ -35,10 +35,11 @@ export default async function AuthLayout({
   children: React.ReactNode;
 }>) {
   const messages = await getMessages();
+  const tError = await getTranslations('Error');
 
   return (
     <SWRProvider>
-      <AuthProvider>
+      <AuthProvider reloadLabel={tError('reload_page')}>
         <NextIntlClientProvider messages={messages}>
           <GoogleAuthProvider>
             <SiteProvider>

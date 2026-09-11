@@ -3,6 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from '@sentry/nextjs';
+import { takeChunkReloadReason } from '@/utils/chunkReload';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -33,5 +34,16 @@ Sentry.init({
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#sendDefaultPii
   sendDefaultPii: true,
 });
+
+// A chunk-load auto-reload (utils/chunkReload.ts) cut off the page that hit the error, so
+// report it from the page it reloaded into.
+const chunkReloadReason = takeChunkReloadReason();
+if (chunkReloadReason) {
+  Sentry.captureMessage('Chunk load auto-reload', {
+    level: 'warning',
+    tags: { chunkLoadAutoReload: true },
+    extra: { reason: chunkReloadReason },
+  });
+}
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

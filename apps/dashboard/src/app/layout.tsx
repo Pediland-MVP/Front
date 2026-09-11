@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { getLocale } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import { RadixDirectionProvider } from '@/components/RadixDirectionProvider';
+import { CHUNK_RELOAD_SCRIPT } from '@/utils/chunkReload';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -53,6 +54,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang={locale} dir={locale === 'fa' ? 'rtl' : 'ltr'} className={className}>
+      <head>
+        {/* Must run before any chunk to catch one that fails to load — see utils/chunkReload.ts */}
+        <script dangerouslySetInnerHTML={{ __html: CHUNK_RELOAD_SCRIPT }} />
+      </head>
       <body>
         <RadixDirectionProvider dir={locale === 'fa' ? 'rtl' : 'ltr'}>
           {children}

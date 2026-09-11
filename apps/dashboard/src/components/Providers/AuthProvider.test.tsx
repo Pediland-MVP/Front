@@ -5,11 +5,12 @@ import { AuthProvider } from './AuthProvider';
 const push = vi.fn();
 const replace = vi.fn();
 let pathname = '/auth/onboarding';
+let searchParamsString = '';
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace }),
   usePathname: () => pathname,
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(searchParamsString),
 }));
 
 let userState: any = {};
@@ -19,6 +20,7 @@ vi.mock('@/hooks/useUser', () => ({
 
 vi.mock('@/hooks/swr/api-client', () => ({
   fetcher: vi.fn(),
+  enableSessionBootstrap: vi.fn(),
 }));
 
 // The real backend returns a `PaginatedResult` — `{ items, meta }` — for both
@@ -164,5 +166,75 @@ describe('AuthProvider — pending invitations / transfers routing', () => {
     await waitFor(() => {
       expect(replace).toHaveBeenCalledWith('/auth/onboarding/invitations');
     });
+  });
+});
+
+// Users sat on the full-screen spinner forever when `/users/me` hung or a JS chunk never
+// loaded (Sentry, 2026-09-11: ~440 users/week with a `/users/me` that never finished).
+describe('AuthProvider — stuck-loading safeguards', () => {
+  const loadingUser = {
+    error: undefined,
+    isOnboarding: false,
+    hasInstagram: false,
+    isLoading: true,
+    user: undefined,
+  };
+
+  beforeEach(() => {
+    push.mockClear();
+    replace.mockClear();
+    sessionStorage.clear();
+    swrResponses = {};
+    searchParamsString = '';
+    pathname = '/';
+  });
+
+  it('turns on the session bootstrap before the first fetch', async () => {
+    const { enableSessionBootstrap } = await import('@/hooks/swr/api-client');
+    userState = loadingUser;
+
+    renderProvider();
+
+    expect(enableSessionBootstrap).toHaveBeenCalled();
+  });
+
+  it.each(['ECONNABORTED', 'ETIMEDOUT', 'ERR_NETWORK'])(
+    'sends a %s on /users/me to the network error page, not to /connect',
+    async (code) => {
+      userState = { ...loadingUser, isLoading: false, error: { code } };
+
+      renderProvider();
+
+      await waitFor(() => {
+        expect(push).toHaveBeenCalledWith('/not-found?status=network');
+      });
+      expect(replace).not.toHaveBeenCalled();
+    },
+  );
+
+  it('puts a delayed reload link to the same URL under the boot spinner', () => {
+    pathname = '/automations';
+    searchParamsString = 'tab=active';
+    userState = loadingUser;
+
+    const { getByText, queryByText } = render(
+      <AuthProvider reloadLabel="reload">
+        <div>console</div>
+      </AuthProvider>,
+    );
+
+    const link = getByText('reload');
+    expect(link.tagName).toBe('A');
+    expect(link.getAttribute('href')).toBe('/automations?tab=active');
+    expect(link.className).toContain('reveal-after-delay');
+    expect(queryByText('console')).toBeNull();
+  });
+
+  it('renders no reload link when no label is passed', () => {
+    userState = loadingUser;
+
+    const { container } = renderProvider();
+
+    expect(container.querySelector('a')).toBeNull();
   });
 });

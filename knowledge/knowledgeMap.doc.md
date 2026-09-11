@@ -5,6 +5,8 @@ This document indexes all documentation files inside the `Front/knowledge` direc
 | File Name / Folder | Path | Description |
 |---|---|---|
 | `front-back-relations.md` | `Front/knowledge/front-back-relations.md` | Documents the relationships and API dependencies between the Front and the Back projects. |
+| `2026-09-11-dashboardStuckLoading.update.md` | `Front/knowledge/updates/2026-09-11-dashboardStuckLoading.update.md` | Why users sat on the dashboard's boot spinner (server HTML is only AuthProvider's spinner; `/users/me` had no timeout/retry; chunk loads that fail before React starts hang forever) and the fix: 20s read timeout + transient-error retry in `fetcher`, single-flight refresh + opt-in session bootstrap (skips the 401 round trip, never in the shop checkout), inline `<head>` chunk-reload script with a 2-per-60s loop guard, and a CSS-only delayed reload link under the spinner. |
+| `2026-09-02-globalChunkLoadErrorReload.update.md` | `Front/knowledge/updates/2026-09-02-globalChunkLoadErrorReload.update.md` | First version of the chunk-load auto-reload in `global-error.tsx` (reload once per 10s). Superseded by `2026-09-11-dashboardStuckLoading.update.md`, which moves the guard into the inline `utils/chunkReload.ts` script. |
 | `knowledgeMap.doc.md` | `Front/knowledge/knowledgeMap.doc.md` | Indexes and describes all documentation files in this folder. |
 | `updates/` | `Front/knowledge/updates/` | Folder containing date-stamped markdown updates for individual features and bug fixes. |
 | `2026-07-12-subscriptionDisplayPolish.update.md` | `Front/knowledge/updates/2026-07-12-subscriptionDisplayPolish.update.md` | Summary of subscription validity merging and reserved subscription UI polish. |

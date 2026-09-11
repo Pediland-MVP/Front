@@ -1972,7 +1972,8 @@
   "Error": {
     "dashboard": "داشبورد",
     "accounts": "اکانت‌ها",
-    "title": "خطا"
+    "title": "خطا",
+    "reload_page": "صفحه باز نمی‌شود؟ دوباره بارگذاری کنید"
   },
   "BottomNav": {
     "menu": "منو",

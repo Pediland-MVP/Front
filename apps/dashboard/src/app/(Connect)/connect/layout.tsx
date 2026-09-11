@@ -2,7 +2,7 @@ import { SWRProvider } from '@/hooks/swr/api-client';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 
 import { ZodErrorsMapProvider } from '@/components/Layout/ZodErrorsMapProvider';
 import { AuthProvider } from '@/components/Providers/AuthProvider';
@@ -22,10 +22,11 @@ export default async function ConsoleLayout({
   children: React.ReactNode;
 }>) {
   const messages = await getMessages();
+  const tError = await getTranslations('Error');
 
   return (
     <SWRProvider>
-      <AuthProvider>
+      <AuthProvider reloadLabel={tError('reload_page')}>
         <NextIntlClientProvider messages={messages}>
           <ZodErrorsMapProvider>
             <SiteProvider>

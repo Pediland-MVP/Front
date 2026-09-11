@@ -6,6 +6,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Hidden until the element has been on screen for 15s. Pure CSS on purpose: it backs
+ * AuthProvider's boot spinner, which is exactly what is left when no JS chunk ever ran.
+ */
+.reveal-after-delay {
+  visibility: hidden;
+  animation: reveal-after-delay 0s linear 15s forwards;
+}
+
+@keyframes reveal-after-delay {
+  to {
+    visibility: visible;
+  }
+}
+
 @theme inline {
   --white: oklch(1 0 0);
   --radius-sm: calc(var(--radius) - 4px);
