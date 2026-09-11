@@ -21,7 +21,6 @@ import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { LifebuoyIcon } from '@phosphor-icons/react/dist/ssr/Lifebuoy';
 import { LightningIcon } from '@phosphor-icons/react/dist/ssr/Lightning';
-import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
 import { SlidersIcon } from '@phosphor-icons/react/dist/ssr/Sliders';
 import { UsersThreeIcon } from '@phosphor-icons/react/dist/ssr/UsersThree';
 import { LogoSlogan } from '../Global/LogoSlogan';
@@ -75,13 +74,37 @@ const generateData = (
       url: '/products',
       icon: CubeIcon,
       isActive: true,
+      items: [
+        {
+          title: t('productsAll'),
+          url: '/products',
+        },
+        {
+          title: t('productsTaxonomy'),
+          url: '/products/taxonomy',
+        },
+        // Bulk import (وارد کردن گروهی) is hidden for now -- the page itself answers 404 and the
+        // backend route is unregistered. Restore this entry when import comes back.
+        // {
+        //   title: t('productsImport'),
+        //   url: '/products/import',
+        // },
+        {
+          title: t('productsShipping'),
+          url: '/products/shipping',
+        },
+        {
+          title: t('productsStoreSettings'),
+          url: '/products/settings',
+        },
+        {
+          title: t('productsOrders'),
+          url: '/products/orders',
+        },
+      ],
     },
-    {
-      title: t('ordersList'),
-      url: '/orders',
-      icon: ShoppingBagIcon,
-      isActive: true,
-    },
+    // The top-level orders entry is removed -- shop orders now live under
+    // Products > سفارش‌های فروشگاه (/products/orders).
     // {
     //   title: t("instagramConnections"),
     //   url: "#",

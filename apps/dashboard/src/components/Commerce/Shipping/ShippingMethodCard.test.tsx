@@ -1,0 +1,386 @@
+import { describe, it, expect, vi, beforeAll } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+
+import messages from '@/messages/fa.json';
+import type { ICity } from '@/types/city';
+import type { IProvince } from '@/types/province';
+import { newOptionDraft, type ShippingOptionDraft } from '@/utils/commerce/shippingDraft';
+
+import { ShippingMethodCard } from './ShippingMethodCard';
+
+// Radix's Select uses pointer-capture APIs jsdom does not implement, and calls scrollIntoView on
+// the item it wants to highlight when opening. Same fix `OrderStatusUpdater.test.tsx` and
+// `SetupInstagramDialog.test.tsx` use. Scoped to this file only.
+beforeAll(() => {
+  Element.prototype.hasPointerCapture = vi.fn(() => false) as never;
+  Element.prototype.setPointerCapture = vi.fn() as never;
+  Element.prototype.releasePointerCapture = vi.fn() as never;
+  Element.prototype.scrollIntoView = vi.fn() as never;
+});
+
+const copy = messages.Commerce.Shipping;
+
+// Opens the kind Radix combobox and picks the named option — same `fireEvent` + `findByRole`
+// drive `OrderStatusUpdater.test.tsx`'s `selectStatus` uses against the identical Select component.
+const selectKind = async (name: string) => {
+  fireEvent.click(screen.getByTestId('kind-select'));
+  fireEvent.click(await screen.findByRole('option', { name }));
+};
+
+const provinces: IProvince[] = [{ id: 2, name: 'هرمزگان', slug: 'hormozgan', tel_prefix: '076' }];
+const cities: ICity[] = [{ id: 20, name: 'کیش', slug: 'kish', provinceId: 2 }];
+
+const baseDraft = (patch: Partial<ShippingOptionDraft> = {}): ShippingOptionDraft => ({
+  ...newOptionDraft('پست پیشتاز', 0),
+  serverId: 'opt-1',
+  amount: 45000,
+  ...patch,
+});
+
+const renderCard = (draft: ShippingOptionDraft, onChange = vi.fn()) => {
+  render(
+    <NextIntlClientProvider locale="fa" messages={messages}>
+      <ShippingMethodCard
+        draft={draft}
+        onChange={onChange}
+        onRemove={vi.fn()}
+        canEdit
+        provinces={provinces}
+        cities={cities}
+        provinceById={new Map(provinces.map((p) => [p.id, p]))}
+        cityById={new Map(cities.map((c) => [c.id, c]))}
+      />
+    </NextIntlClientProvider>,
+  );
+  return onChange;
+};
+
+/**
+ * The card ships collapsed, so every test about the BODY has to open it first — exactly what a
+ * merchant does. Clicks the last edit button on screen, so the two-render test below still works.
+ */
+const renderOpenCard = (draft: ShippingOptionDraft, onChange = vi.fn()) => {
+  renderCard(draft, onChange);
+  const buttons = screen.getAllByRole('button', { name: copy.edit });
+  fireEvent.click(buttons[buttons.length - 1]);
+  return onChange;
+};
+
+describe('ShippingMethodCard — closed until asked', () => {
+  it('shows no form for an ACTIVE method — being switched on is not a request to retune it', () => {
+    renderCard(baseDraft({ isActive: true }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+  });
+
+  it('still says everything that matters in the summary while closed', () => {
+    renderCard(baseDraft({ isActive: true, amount: 45000, freeOverAmount: 1_500_000 }));
+
+    const summary = screen.getByTestId('method-summary');
+    expect(summary).toHaveTextContent('۴۵٬۰۰۰');
+    expect(summary).toHaveTextContent('۱٬۵۰۰٬۰۰۰');
+  });
+
+  it('summarises «تحویل حضوری» as free, even while the draft still holds a rate', () => {
+    // A merchant can pick the pickup kind on a method that was prepaid with a real price. The rate
+    // only becomes 0 when it is SAVED (`toPayload`), so the closed card would otherwise advertise a
+    // price the buyer is never charged.
+    renderCard(
+      baseDraft({ isActive: true, kind: 'pickup', amount: 50_000, freeOverAmount: 200_000 }),
+    );
+
+    const summary = screen.getByTestId('method-summary');
+    expect(summary).toHaveTextContent(copy.summaryPickup);
+    expect(summary).not.toHaveTextContent('۵۰٬۰۰۰');
+  });
+
+  it('hides the rate, threshold and city exceptions for a pickup, and says why', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup', amount: 50_000 }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    // Its own note, not the carrier-collects one -- there is no مأمور پست in a pickup.
+    expect(screen.getByText(copy.pickupRateNote)).toBeInTheDocument();
+    expect(screen.queryByText(copy.noRateNote)).not.toBeInTheDocument();
+  });
+
+  it('offers the collection address on a pickup, and on nothing else', () => {
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }));
+    expect(screen.getByLabelText(copy.pickupAddressLabel)).toBeInTheDocument();
+
+    cleanup();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'post_express' }));
+    expect(screen.queryByLabelText(copy.pickupAddressLabel)).not.toBeInTheDocument();
+  });
+
+  it('reports the typed collection address up', () => {
+    const onChange = vi.fn();
+    renderOpenCard(baseDraft({ isActive: true, kind: 'pickup' }), onChange);
+
+    fireEvent.change(screen.getByLabelText(copy.pickupAddressLabel), {
+      target: { value: 'تهران، ولیعصر، پلاک ۱۲' },
+    });
+
+    expect(onChange).toHaveBeenCalledWith({ pickupAddress: 'تهران، ولیعصر، پلاک ۱۲' });
+  });
+
+  it('opens on the pencil and closes again on the second click', () => {
+    renderCard(baseDraft());
+
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: copy.closeEditor }));
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+  });
+
+  // Every seeded method starts at 0, so the merchant who just switched one on is about to need
+  // the price field — and may not have realised the rate was zero.
+  it('opens the details when the method is switched ON', () => {
+    const draft = baseDraft({ isActive: false });
+    renderCard(draft);
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+  });
+
+  // The switch carries the card both ways: OFF says the merchant is done with this method, so the
+  // form goes rather than sitting open under something the shop no longer offers. The pencil is
+  // still there to reopen it.
+  it('closes the details when the method is switched OFF', () => {
+    const draft = baseDraft({ isActive: true });
+    renderCard(draft);
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+  });
+
+  it('does not open a closed card when the method is switched OFF', () => {
+    const draft = baseDraft({ isActive: true });
+    renderCard(draft);
+
+    fireEvent.click(screen.getByRole('switch', { name: draft.title }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+  });
+
+  it('opens a never-saved method straight away, or «افزودن روش» would look like it did nothing', () => {
+    renderCard(baseDraft({ serverId: null }));
+
+    expect(screen.getByLabelText(copy.titleLabel)).toBeInTheDocument();
+  });
+
+  it('lets a read-only member open the card — the controls inside carry their own disabled', () => {
+    render(
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <ShippingMethodCard
+          draft={baseDraft()}
+          onChange={vi.fn()}
+          onRemove={vi.fn()}
+          canEdit={false}
+          provinces={provinces}
+          cities={cities}
+          provinceById={new Map(provinces.map((p) => [p.id, p]))}
+          cityById={new Map(cities.map((c) => [c.id, c]))}
+        />
+      </NextIntlClientProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+    expect(screen.getByLabelText(copy.priceLabel)).toBeDisabled();
+  });
+});
+
+describe('ShippingMethodCard — a seeded method cannot be deleted', () => {
+  const removeLabel = (draft: ShippingOptionDraft) => `${copy.remove} — ${draft.title}`;
+
+  it('offers no delete button at all — a dead disabled icon would explain nothing', () => {
+    const draft = baseDraft({ isSystem: true });
+    renderCard(draft);
+
+    expect(screen.queryByRole('button', { name: removeLabel(draft) })).not.toBeInTheDocument();
+  });
+
+  it('says why, and points at the switch that does what the merchant wants', () => {
+    renderOpenCard(baseDraft({ isSystem: true }));
+
+    expect(screen.getByText(copy.systemMethodNote)).toBeInTheDocument();
+  });
+
+  it('still deletes a method the merchant added themselves', () => {
+    const draft = baseDraft({ isSystem: false });
+    renderCard(draft);
+
+    expect(screen.getByRole('button', { name: removeLabel(draft) })).toBeInTheDocument();
+  });
+
+  it('stays fully editable — undeletable is not read-only', () => {
+    const onChange = renderOpenCard(baseDraft({ isSystem: true }));
+
+    fireEvent.change(screen.getByLabelText(copy.titleLabel), { target: { value: 'پست ویژه' } });
+
+    expect(onChange).toHaveBeenCalledWith({ title: 'پست ویژه' });
+  });
+});
+
+describe('ShippingMethodCard — the three settlement modes are exclusive', () => {
+  it('offers exactly three, as radios rather than switches', () => {
+    renderOpenCard(baseDraft());
+
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(3);
+    expect(screen.getByRole('radio', { name: copy.settlements.prepaid })).toBeChecked();
+  });
+
+  it('shows the rate, the free-shipping row and the exceptions toggle when prepaid', () => {
+    renderOpenCard(baseDraft({ settlement: 'prepaid' }));
+
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+    expect(screen.getByText(copy.freeOverLabel)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.exceptionsAdd })).toBeInTheDocument();
+  });
+
+  it.each(['freight_collect', 'cash_on_delivery'] as const)(
+    'hides all three under %s, where the carrier collects',
+    (settlement) => {
+      renderOpenCard(baseDraft({ settlement }));
+
+      expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+      expect(screen.queryByText(copy.freeOverLabel)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: copy.exceptionsAdd })).not.toBeInTheDocument();
+      // ...and says why, rather than leaving an unexplained gap.
+      expect(screen.getByText(copy.noRateNote)).toBeInTheDocument();
+    },
+  );
+
+  it('asks the parent to switch mode when another radio is picked', () => {
+    const onChange = renderOpenCard(baseDraft());
+
+    fireEvent.click(screen.getByRole('radio', { name: copy.settlements.cash_on_delivery }));
+
+    expect(onChange).toHaveBeenCalledWith({ settlement: 'cash_on_delivery' });
+  });
+
+  it.each([
+    ['freight_collect', copy.summaryFreightCollect],
+    ['cash_on_delivery', copy.summaryCashOnDelivery],
+  ] as const)('summarises %s by its mode, not by a price it never charges', (settlement, label) => {
+    renderCard(baseDraft({ settlement, amount: 45000 }));
+
+    expect(screen.getByTestId('method-summary')).toHaveTextContent(label);
+  });
+});
+
+describe('ShippingMethodCard — «تحویل حضوری» cannot be پس‌کرایه', () => {
+  // «پس‌کرایه» means the receiver settles the FREIGHT with the CARRIER. A pickup has neither, so
+  // the combination is meaningless -- and until now it was merely hidden downstream rather than
+  // prevented. The backend refuses it too; the radio must not be offerable in the first place.
+  it('does not offer پس‌کرایه on a تحویل حضوری', () => {
+    renderOpenCard(baseDraft({ kind: 'pickup' }));
+
+    expect(screen.getByTestId('settlement-prepaid')).toBeEnabled();
+    expect(screen.getByTestId('settlement-cash_on_delivery')).toBeEnabled();
+    expect(screen.queryByTestId('settlement-freight_collect')).toBeNull();
+  });
+
+  it('still offers all three settlements on a non-pickup kind', () => {
+    renderOpenCard(baseDraft({ kind: 'post_express' }));
+
+    expect(screen.getByTestId('settlement-prepaid')).toBeEnabled();
+    expect(screen.getByTestId('settlement-freight_collect')).toBeEnabled();
+    expect(screen.getByTestId('settlement-cash_on_delivery')).toBeEnabled();
+  });
+
+  // Filtering the radio list alone is not enough: a method already saved as `post_express` +
+  // `freight_collect` would otherwise keep that settlement when switched to `pickup`, and the
+  // now-hidden radio would be submitted unchanged. The kind handler must clear it in the SAME
+  // change.
+  it('drops a stale freight_collect when the kind becomes pickup', async () => {
+    const onChange = renderOpenCard(
+      baseDraft({ kind: 'post_express', settlement: 'freight_collect' }),
+    );
+
+    await selectKind(copy.kinds.pickup);
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'pickup', settlement: 'prepaid' }),
+    );
+  });
+
+  it('keeps a compatible settlement when the kind changes', async () => {
+    const onChange = renderOpenCard(
+      baseDraft({ kind: 'post_express', settlement: 'cash_on_delivery' }),
+    );
+
+    await selectKind(copy.kinds.pickup);
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'pickup', settlement: 'cash_on_delivery' }),
+    );
+  });
+
+  it('tells a pickup merchant they collect at their own counter, not that a courier does', () => {
+    renderOpenCard(baseDraft({ kind: 'pickup', settlement: 'cash_on_delivery' }));
+
+    const note = screen.getByTestId('settlement-note-cash_on_delivery');
+    expect(note).not.toHaveTextContent('مأمور پست');
+    expect(note).toHaveTextContent('حضوری');
+  });
+
+  it('keeps the courier-collects note on a non-pickup', () => {
+    renderOpenCard(baseDraft({ kind: 'post_express', settlement: 'cash_on_delivery' }));
+
+    expect(screen.getByTestId('settlement-note-cash_on_delivery')).toHaveTextContent('مأمور پست');
+  });
+});
+
+describe('ShippingMethodCard — free shipping threshold', () => {
+  it('shows a dash while there is no threshold', () => {
+    renderOpenCard(baseDraft({ freeOverAmount: null }));
+
+    expect(screen.getByText(copy.freeOverDisabled)).toBeInTheDocument();
+  });
+
+  it('reveals the amount once the threshold is switched on', () => {
+    renderOpenCard(baseDraft({ freeOverAmount: 1_500_000 }));
+
+    expect(screen.getByLabelText(copy.freeOverAmountLabel)).toHaveValue('۱٬۵۰۰٬۰۰۰');
+  });
+
+  // `null` means never waived; `0` means always free. Turning the switch off has to write null,
+  // or a shop that never offers free shipping would start offering it on every order.
+  it('writes null when switched off, and 0 when switched on', () => {
+    const onChange = renderOpenCard(baseDraft({ freeOverAmount: 500_000 }));
+    fireEvent.click(screen.getByRole('switch', { name: copy.freeOverLabel }));
+    expect(onChange).toHaveBeenCalledWith({ freeOverAmount: null });
+
+    const onChange2 = renderOpenCard(baseDraft({ freeOverAmount: null }));
+    fireEvent.click(screen.getAllByRole('switch', { name: copy.freeOverLabel })[1]);
+    expect(onChange2).toHaveBeenCalledWith({ freeOverAmount: 0 });
+  });
+});
+
+describe('ShippingMethodCard — an inactive method stays editable', () => {
+  it('says it is off instead of showing a price nobody is being charged', () => {
+    renderCard(baseDraft({ isActive: false }));
+
+    expect(screen.queryByLabelText(copy.priceLabel)).not.toBeInTheDocument();
+    expect(screen.getByText(copy.summaryInactive)).toBeInTheDocument();
+  });
+
+  // Fixing the price BEFORE switching a method back on is the whole reason an off method must
+  // still open.
+  it('opens through the same pencil, so a disabled price can still be fixed', () => {
+    renderCard(baseDraft({ isActive: false }));
+
+    fireEvent.click(screen.getByRole('button', { name: copy.edit }));
+
+    expect(screen.getByLabelText(copy.priceLabel)).toBeInTheDocument();
+  });
+});

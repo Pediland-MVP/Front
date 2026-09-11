@@ -227,13 +227,22 @@ export default function OrderDetails({ order, setOpen }: OrderDetailsProps) {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="h-[90vh] max-h-[90vh] max-w-3xl">
-                  <ImageWithFallback
-                    src={order.orderCardToCard?.url ?? '/images/no-image.png'}
-                    fallbackSrc="/images/no-image.png"
-                    alt={t('cardToCardImage')}
-                    fill
-                    className="h-auto w-full object-contain"
-                  />
+                  {/*
+                   * `next/image`'s `fill` positions itself `absolute; inset: 0` against the
+                   * nearest positioned ancestor -- which used to be `DialogContent` itself, so
+                   * the image ignored its `p-6` padding and could bleed past the dialog's
+                   * rounded corners on any screen size. This wrapper gives `fill` a properly
+                   * sized, clipped box to fill instead.
+                   */}
+                  <div className="relative h-full w-full overflow-hidden rounded-md">
+                    <ImageWithFallback
+                      src={order.orderCardToCard?.url ?? '/images/no-image.png'}
+                      fallbackSrc="/images/no-image.png"
+                      alt={t('cardToCardImage')}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
                 </DialogContent>
               </Dialog>
             </CardContent>

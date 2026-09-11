@@ -1,0 +1,4 @@
+title,description,status,kind,category,option1Name,option1Value,option2Name,option2Value,option3Name,option3Value,sku,price,compareAtPrice,stock,trackInventory,weight
+تیشرت مردانه کلاسیک,تیشرت نخی کلاسیک با دوخت درجه یک,active,physical,پوشاک,سایز,M,,,,,TSHIRT-M,450000,550000,20,true,200
+تیشرت مردانه کلاسیک,,,,,سایز,L,,,,,TSHIRT-L,450000,550000,15,true,210
+دوره آموزشی آنلاین فتوشاپ,دسترسی نامحدود و مادام‌العمر به ویدیوهای دوره,active,digital,دوره‌های آموزشی,,,,,,,COURSE-PS-01,1200000,,0,false,

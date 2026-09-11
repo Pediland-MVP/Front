@@ -1,7 +1,7 @@
 'use client';
 
 import useUser from '@/hooks/useUser';
-import { fetcher } from '@/hooks/swr/api-client';
+import { enableSessionBootstrap, fetcher } from '@/hooks/swr/api-client';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -11,12 +11,22 @@ import { RESUME_PARAM_KEYS } from '@/components/Connect/useInstagramWizardResume
 
 interface AuthProviderProps {
   children: React.ReactNode;
+  // Text of the link the boot spinner reveals if it is still up after 15s. Passed from the
+  // server layout because this provider renders above NextIntlClientProvider.
+  reloadLabel?: string;
 }
 
 type PendingInvitation = { id: string };
 type PendingTransfer = { id: string };
 
-export function AuthProvider({ children }: AuthProviderProps) {
+// No response at all — the request never reached the server or never came back.
+const NETWORK_ERROR_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ETIMEDOUT']);
+
+export function AuthProvider({ children, reloadLabel }: AuthProviderProps) {
+  // Refresh the session before the first request instead of after its 401. Called during
+  // render (idempotent) because useUser's first fetch runs in an effect.
+  enableSessionBootstrap();
+
   const [isAllowed, setIsAllowed] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -95,7 +105,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
-      if (error.code === 'ERR_NETWORK') {
+      // A timeout counts too: routing on the missing user would bounce to /connect.
+      if (NETWORK_ERROR_CODES.has(error.code)) {
         console.error('Error Network:', error);
         router.push('/not-found?status=network');
         return;
@@ -269,9 +280,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Show spinner until routing is resolved for the current path.
   if (!isAllowed) {
+    const query = searchParams.toString();
+    const reloadHref = query ? `${pathname}?${query}` : pathname;
+
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
+      <div className="flex h-screen flex-col items-center justify-center gap-6 bg-white">
         <LoaderSpin />
+        {reloadLabel && (
+          // A plain link, not a button: the server renders this spinner, and the link must
+          // work even when no JS chunk ever ran — which is exactly when it is needed.
+          <a
+            href={reloadHref}
+            className="reveal-after-delay text-sm font-medium text-violet-700 underline underline-offset-4"
+          >
+            {reloadLabel}
+          </a>
+        )}
       </div>
     );
   }

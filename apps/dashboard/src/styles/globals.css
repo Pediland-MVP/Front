@@ -6,6 +6,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Hidden until the element has been on screen for 15s. Pure CSS on purpose: it backs
+ * AuthProvider's boot spinner, which is exactly what is left when no JS chunk ever ran.
+ */
+.reveal-after-delay {
+  visibility: hidden;
+  animation: reveal-after-delay 0s linear 15s forwards;
+}
+
+@keyframes reveal-after-delay {
+  to {
+    visibility: visible;
+  }
+}
+
 @theme inline {
   --white: oklch(1 0 0);
   --radius-sm: calc(var(--radius) - 4px);
@@ -44,6 +59,24 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Commerce editor semantics. Declared here — not only in `:root` — because a bare custom
+     property is invisible to Tailwind: `bg-tint2` only compiles once the value is registered
+     as a `--color-*` theme entry. The `:root` block below holds the actual values. */
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-tint: var(--tint);
+  --color-tint2: var(--tint2);
+  --color-ln: var(--ln);
+  --color-lnv: var(--lnv);
+  --color-mut: var(--mut);
+  --color-wline: var(--wline);
+  --color-wtint: var(--wtint);
+  --color-wtext: var(--wtext);
+  --color-dline: var(--dline);
+  --color-dtint: var(--dtint);
+  --color-dtext: var(--dtext);
+  --color-ink: var(--ink);
 }
 
 :root {
@@ -80,6 +113,42 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* ---- Commerce product editor (claude-design "Befroosh Design System") ----
+     The design system's base palette is byte-identical to the one above ("mirrors the tokens
+     in Front"), so only the semantics it adds are declared here. Everything below is DERIVED
+     from an existing token via color-mix, so it follows the theme instead of forking it —
+     including dark mode, where the .dark overrides of --primary/--border/--destructive flow
+     straight through. */
+  --warning: oklch(80% 0.16 90);
+  --success: oklch(64.8% 0.15 160);
+  --radius-full: 9999px;
+
+  /* The near-black the design uses for the floating bulk bar and the badges that sit on top of
+     a photo. Named `--ink`, not `--dark`, because `.dark` is the theme class — a `--dark`
+     token that does NOT mean "dark mode" would be read wrong by the next person. */
+  --ink: oklch(24% 0.02 293);
+
+  /* Surfaces + lines */
+  --tint: var(--muted);
+  --tint2: color-mix(in oklch, var(--primary) 8%, transparent);
+  --ln: var(--border);
+  --lnv: var(--border);
+  --mut: var(--muted-foreground);
+  --glow: 0 0 0 3px color-mix(in oklch, var(--ring) 40%, transparent);
+
+  /* Warning set — an unpriced/zero-stock variation row */
+  --wline: color-mix(in oklch, var(--warning) 40%, transparent);
+  --wtint: color-mix(in oklch, var(--warning) 16%, transparent);
+  --wtext: oklch(52% 0.09 78);
+
+  /* Danger set — an invalid variation row */
+  --dline: color-mix(in oklch, var(--destructive) 32%, transparent);
+  --dtint: color-mix(in oklch, var(--destructive) 8%, transparent);
+  --dtext: oklch(50% 0.16 20);
+
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
 }
 
 .dark {
@@ -114,6 +183,16 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Commerce editor: only the two FIXED-lightness tokens need a dark counterpart. Every other
+     editor token is a color-mix over --primary/--border/--destructive/--ring, so the .dark
+     overrides of those flow through on their own. */
+  --wtext: oklch(84% 0.11 78);
+  --dtext: oklch(78% 0.14 20);
+  /* Also fixed-lightness: `--ink` is the "always dark, whatever the theme" surface the bulk bar
+     and photo badges sit on. In dark mode it must LIFT off the near-black page, not sink into
+     it, so it goes lighter here rather than following the usual invert. */
+  --ink: oklch(32% 0.02 293);
 }
 
 @layer base {
@@ -140,4 +219,98 @@
 /* Instagram brand gradient — used as a small accent (icon tiles, avatar rings). */
 .bg-instagram {
   background-image: linear-gradient(45deg, #f58529 0%, #dd2a7b 45%, #8134af 75%, #515bd4 100%);
+}
+
+/* ---- Commerce product editor: the rules Tailwind cannot express ----
+ *
+ * Everything else on this page is Tailwind utilities. This file only holds the one thing a class
+ * list cannot express: the desktop `grid-template-columns` value below is long and identical on
+ * every one of up to 2000 rows — an arbitrary-value Tailwind class would mean repeating that
+ * string verbatim in three components instead of once here.
+ *
+ * `[data-bad]` and `[data-chev]` ride along here because they must beat the `focus:`/`hover:`
+ * border utilities sitting on the same element — hence the `!important`.
+ *
+ * POSTMORTEM, read before touching this block again: this used to reflow the row below 760px
+ * into a `grid-template-areas` card, with `nth-child` picking out which cell got which area.
+ * Radix's `Checkbox` renders a hidden native `<input>` as an invisible SIBLING of its button (for
+ * native form participation) — a bare `<Checkbox />` sitting directly among a row's cells made
+ * that input an uncounted extra child, so every `nth-child` rule silently pointed one cell too
+ * far (the stock input rendered inside the 56px delete-button column). The fix was two-fold and
+ * both halves matter: every `<Checkbox>` is now wrapped in its own cell (containing that hidden
+ * input, so it can never leak into the row again), AND — per this section — mobile no longer
+ * does area/position math at all. Below 760px this is a plain stacked list; every real cell
+ * carries a `data-cell` name for the rare style that still needs to target one.
+ */
+
+/* Variation grid, desktop: one column per header cell.
+   checkbox | label | media | price | compare | stock | actions */
+[data-vg] {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns:
+    26px minmax(140px, 1.2fr) 88px minmax(120px, 1fr)
+    minmax(130px, 1fr) minmax(130px, 1fr) 56px;
+}
+
+/* Below 760px this is not a grid — every cell is a full-width block, stacked in DOM order, and
+   carries its own inline label (see `VariantLeafRow`/`VariantGroupRow`), so the desktop column
+   headers above the list are redundant here and hidden. */
+@media (max-width: 760px) {
+  [data-vg] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-inline: 11px;
+  }
+
+  /* The header row keeps only the "select all" checkbox (plus its own inline label) — every
+     other columnheader's job moved onto the fields themselves. */
+  [data-vg][data-head] {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  [data-vg][data-head] [role='columnheader']:not([data-cell]) {
+    display: none;
+  }
+
+  [data-vg] [data-cell='media'] {
+    align-self: flex-start;
+  }
+
+  /* The child row's indent is a desktop affordance; at this width it only eats the label. */
+  [data-row='leaf'] [data-cell='label'] {
+    padding-inline-start: 0 !important;
+  }
+}
+
+@media (max-width: 420px) {
+  /* The media thumbnail button is a fixed `size-10`/`size-11` (40/44px) in the component — cap it
+     to match the tighter padding at this width. */
+  [data-vg] [data-cell='media'] {
+    width: 34px !important;
+    height: 34px !important;
+  }
+}
+
+/* An invalid cell. `empty` = a variation with no price, which blocks Save outright (the column
+   is NOT NULL). `zero` = a soft warning, e.g. compare not above price. */
+[data-bad='empty'] {
+  border-color: var(--dline) !important;
+  background: var(--dtint) !important;
+}
+[data-bad='zero'] {
+  border-color: var(--wline) !important;
+  background: var(--wtint) !important;
+}
+
+/* Expand/collapse chevron on a parent variation row. */
+[data-chev] {
+  transition: transform 0.18s ease-out;
+}
+[data-chev][aria-expanded='false'] {
+  transform: rotate(-90deg);
 }

@@ -1,0 +1,411 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { PencilIcon, Trash2Icon, XIcon } from 'lucide-react';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@/lib/utils';
+import type { ICity } from '@/types/city';
+import type { IProvince } from '@/types/province';
+import type { CommerceShippingKind, CommerceShippingSettlement } from '@/types/shipping';
+import {
+  chargesShipping,
+  SETTLEMENTS_BY_KIND,
+  type ShippingOptionDraft,
+  type ShippingOverrideDraft,
+} from '@/utils/commerce/shippingDraft';
+
+import {
+  editorCard,
+  editorIconButton,
+  editorIconButtonDanger,
+  editorInput,
+} from '../ProductEditor/ui/editorChrome';
+import { formatAmount, formatCount } from '../ProductEditor/utils/editorNumber.util';
+import { MoneyField } from './MoneyField';
+import { RateOverrideEditor } from './RateOverrideEditor';
+
+/** Order the kinds are offered in — the two postal services first, since most merchants use them. */
+const KINDS: CommerceShippingKind[] = [
+  'post_express',
+  'post_registered',
+  'tipax',
+  'courier',
+  'pickup',
+  'other',
+];
+
+interface ShippingMethodCardProps {
+  draft: ShippingOptionDraft;
+  onChange: (patch: Partial<ShippingOptionDraft>) => void;
+  onRemove: () => void;
+  canEdit: boolean;
+  provinces: IProvince[];
+  cities: ICity[];
+  provinceById: Map<number, IProvince>;
+  cityById: Map<number, ICity>;
+}
+
+/**
+ * One shipping method: its switch, its price, and everything that modifies that price.
+ *
+ * The card is COLLAPSED until the merchant asks to edit it. The list is the primary view — every
+ * workspace is seeded with five methods, so five open cards would bury the one thing this screen
+ * is for (seeing at a glance what the shop offers and switching methods on and off) under five
+ * forms nobody asked for. The header alone answers that: name, carrier, and a summary line
+ * carrying the price, the free-shipping threshold and the exception count.
+ *
+ * `settlement` is a single choice — prepay, پس‌کرایه, or پرداخت در محل — because a method is
+ * exactly one of them and never two at once. It is a radio group rather than switches for the
+ * same reason: switches would let a merchant turn on two mutually exclusive things and then have
+ * the screen quietly pick one. A `pickup` («تحویل حضوری») only offers two: پس‌کرایه means settling
+ * the FREIGHT with a CARRIER, and a pickup has neither — see `SETTLEMENTS_BY_KIND`.
+ *
+ * Only the prepaid mode has a rate the seller charges, so the price, the free-shipping threshold
+ * and the per-city exceptions are HIDDEN under the other two rather than left on screen
+ * contradicting the mode. The server enforces the same exclusion with a CHECK constraint.
+ */
+export const ShippingMethodCard = ({
+  draft,
+  onChange,
+  onRemove,
+  canEdit,
+  provinces,
+  cities,
+  provinceById,
+  cityById,
+}: ShippingMethodCardProps) => {
+  const t = useTranslations('Commerce.Shipping');
+
+  /**
+   * Closed until the pencil is clicked — for an ACTIVE method as much as an inactive one. Being
+   * switched on says the shop offers it, not that the merchant wants to retune it.
+   *
+   * Two things move it besides the pencil: a method that has never been saved opens itself
+   * (`serverId === null` means the merchant just pressed «افزودن روش», and leaving that row
+   * collapsed would make the button look like it did nothing but append a nameless card), and the
+   * on/off switch carries it open and shut — see the `Switch` below.
+   */
+  const [isEditing, setIsEditing] = useState(draft.serverId === null);
+  const charges = chargesShipping(draft);
+
+  const summary = useMemo(() => {
+    if (!draft.isActive) return t('summaryInactive');
+
+    // Before the settlement checks: a pickup charges nothing whatever settlement it carries, and
+    // the buyer is told so on the order summary. Without this branch a pickup a merchant left on
+    // «پرداخت آنلاین» printed whatever stale rate the draft still held.
+    if (draft.kind === 'pickup') return t('summaryPickup');
+    if (draft.settlement === 'freight_collect') return t('summaryFreightCollect');
+    if (draft.settlement === 'cash_on_delivery') return t('summaryCashOnDelivery');
+
+    const parts: string[] = [
+      draft.amount > 0 ? `${formatAmount(draft.amount)} ${t('priceUnit')}` : t('summaryFree'),
+    ];
+    if (draft.freeOverAmount != null) {
+      parts.push(t('summaryFreeAbove', { amount: formatAmount(draft.freeOverAmount) }));
+    }
+    if (draft.overrides.length > 0) {
+      parts.push(t('summaryExceptions', { count: formatCount(draft.overrides.length) }));
+    }
+    return parts.join('  ·  ');
+  }, [draft, t]);
+
+  const setOverrides = (next: ShippingOverrideDraft[]) => onChange({ overrides: next });
+
+  return (
+    <div className={editorCard}>
+      <div className="flex items-start gap-3 p-4">
+        <div className="pt-0.5">
+          <Switch
+            checked={draft.isActive}
+            disabled={!canEdit}
+            onCheckedChange={(checked) => {
+              onChange({ isActive: checked });
+              // The switch carries the card open and shut. ON is the moment a method's price
+              // starts to matter -- every seeded method starts at 0, so the merchant is about to
+              // need this form and may not have realised the rate was zero. OFF says they are done
+              // with it, so the form goes away rather than sitting open under a method the shop no
+              // longer offers.
+              //
+              // Editing an OFF method is still perfectly possible -- that is what the pencil is
+              // for, and fixing the price before switching it back on is the main reason to.
+              setIsEditing(checked);
+            }}
+            aria-label={draft.title}
+          />
+        </div>
+
+        <div className={cn('flex min-w-0 flex-1 flex-col gap-1', !draft.isActive && 'opacity-55')}>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-base font-bold">{draft.title || t('newMethodTitle')}</span>
+            <span className="bg-tint text-mut rounded px-1.5 py-0.5 text-[10px] font-bold">
+              {t(`kinds.${draft.kind}`)}
+            </span>
+          </div>
+          <div data-testid="method-summary" className="text-mut text-xs">
+            {summary}
+          </div>
+        </div>
+
+        <div className="flex flex-none items-center gap-1">
+          {/*
+            Never disabled by `canEdit`: a member without write access still needs to READ what a
+            method costs, and every control inside the body carries its own `disabled`.
+          */}
+          <button
+            type="button"
+            onClick={() => setIsEditing((open) => !open)}
+            aria-label={isEditing ? t('closeEditor') : t('edit')}
+            aria-expanded={isEditing}
+            className={cn(editorIconButton, isEditing && 'bg-tint2 text-primary')}
+          >
+            {isEditing ? (
+              <XIcon className="size-3.5" aria-hidden="true" />
+            ) : (
+              <PencilIcon className="size-3.5" aria-hidden="true" />
+            )}
+          </button>
+          {/*
+            A seeded method has no delete button at all, rather than a disabled one: the style's
+            `disabled:pointer-events-none` would swallow the tooltip that explains why, leaving a
+            dead icon. The reason is stated inside the open body instead, next to the switch that
+            does what the merchant actually wants.
+          */}
+          {!draft.isSystem && (
+            <button
+              type="button"
+              disabled={!canEdit}
+              onClick={onRemove}
+              aria-label={`${t('remove')} — ${draft.title}`}
+              className={editorIconButtonDanger}
+            >
+              <Trash2Icon className="size-3.5" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {isEditing && (
+        <div className="flex flex-col gap-3 px-4 pb-4">
+          <div className="border-ln grid gap-3 border-t pt-3.5 sm:grid-cols-[200px_minmax(0,1fr)]">
+            <div>
+              <label className="text-mut mb-1.5 block text-xs font-bold">{t('kindLabel')}</label>
+              <Select
+                value={draft.kind}
+                disabled={!canEdit}
+                onValueChange={(value) => {
+                  const kind = value as CommerceShippingKind;
+                  // A settlement the new kind cannot offer (پس‌کرایه on a pickup, currently the
+                  // only case) must not survive the switch: filtering the radio list alone would
+                  // still submit it unchanged, through a radio the merchant can no longer see to
+                  // fix.
+                  const settlement = SETTLEMENTS_BY_KIND(kind).includes(draft.settlement)
+                    ? draft.settlement
+                    : 'prepaid';
+                  onChange({ kind, settlement });
+                }}
+              >
+                <SelectTrigger className="w-full" data-testid="kind-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {KINDS.map((kind) => (
+                    <SelectItem key={kind} value={kind}>
+                      {t(`kinds.${kind}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label
+                htmlFor={`title-${draft.key}`}
+                className="text-mut mb-1.5 block text-xs font-bold"
+              >
+                {t('titleLabel')}
+              </label>
+              <input
+                id={`title-${draft.key}`}
+                type="text"
+                disabled={!canEdit}
+                value={draft.title}
+                onChange={(e) => onChange({ title: e.target.value })}
+                className={cn(editorInput, 'font-semibold')}
+              />
+            </div>
+          </div>
+
+          {draft.isSystem && (
+            <p className="text-mut border-lnv bg-tint rounded-xl border p-3 text-xs text-pretty">
+              {t('systemMethodNote')}
+            </p>
+          )}
+
+          {/*
+            A radio group, not switches: the three modes are mutually exclusive, and switches
+            would let a merchant turn on two of them and leave the screen to quietly pick one.
+          */}
+          <fieldset className="border-lnv bg-tint rounded-xl border p-3">
+            <legend className="text-mut px-1 text-xs font-bold">{t('settlementLabel')}</legend>
+            <RadioGroup
+              value={draft.settlement}
+              disabled={!canEdit}
+              onValueChange={(value) =>
+                onChange({ settlement: value as CommerceShippingSettlement })
+              }
+              className="gap-2"
+            >
+              {SETTLEMENTS_BY_KIND(draft.kind).map((mode) => (
+                <label
+                  key={mode}
+                  htmlFor={`settlement-${draft.key}-${mode}`}
+                  className={cn(
+                    'flex cursor-pointer items-start gap-2.5 rounded-lg p-2 transition-colors',
+                    draft.settlement === mode ? 'bg-card' : 'hover:bg-card/60',
+                  )}
+                >
+                  <RadioGroupItem
+                    id={`settlement-${draft.key}-${mode}`}
+                    value={mode}
+                    data-testid={`settlement-${mode}`}
+                    // The wrapping label also holds the explanation paragraph, so without this the
+                    // accessible name would be the mode plus a sentence of prose.
+                    aria-label={t(`settlements.${mode}`)}
+                    className="mt-0.5"
+                  />
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm font-semibold">{t(`settlements.${mode}`)}</span>
+                    <span
+                      data-testid={`settlement-note-${mode}`}
+                      className="text-mut text-xs text-pretty"
+                    >
+                      {/* «پرداخت در محل» means something different depending on the kind: a
+                          courier collecting at the door vs. the merchant's own counter. There is
+                          no مأمور پست at a counter, so the pickup note is its own key rather than
+                          a shared one that would misdescribe who is collecting. */}
+                      {t(
+                        `settlementNotes.${
+                          mode === 'cash_on_delivery' && draft.kind === 'pickup'
+                            ? 'cash_on_delivery_pickup'
+                            : mode
+                        }`,
+                      )}
+                    </span>
+                  </span>
+                </label>
+              ))}
+            </RadioGroup>
+          </fieldset>
+
+          {charges ? (
+            <>
+              <div className="flex flex-wrap items-end gap-3.5">
+                <div className="w-48">
+                  <label
+                    htmlFor={`price-${draft.key}`}
+                    className="text-mut mb-1.5 block text-xs font-bold"
+                  >
+                    {t('priceLabel')}
+                  </label>
+                  <MoneyField
+                    id={`price-${draft.key}`}
+                    value={draft.amount}
+                    onChange={(next) => onChange({ amount: next ?? 0 })}
+                    disabled={!canEdit}
+                    ariaLabel={t('priceLabel')}
+                    unit={t('priceUnit')}
+                  />
+                </div>
+                <p className="text-mut max-w-72 pb-3 text-xs text-pretty">{t('priceHint')}</p>
+              </div>
+
+              <div className="border-lnv bg-tint flex flex-wrap items-center gap-2.5 rounded-xl border p-3">
+                <Switch
+                  // `null` means the seller never waives shipping; a number (0 included) means
+                  // they do. The switch is that distinction, which is why turning it off writes
+                  // null rather than 0 -- 0 would mean "always free".
+                  checked={draft.freeOverAmount != null}
+                  disabled={!canEdit}
+                  onCheckedChange={(checked) => onChange({ freeOverAmount: checked ? 0 : null })}
+                  aria-label={t('freeOverLabel')}
+                />
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                  <span className="text-sm font-semibold">{t('freeOverLabel')}</span>
+                  {draft.freeOverAmount != null ? (
+                    <MoneyField
+                      value={draft.freeOverAmount}
+                      onChange={(next) => onChange({ freeOverAmount: next ?? 0 })}
+                      disabled={!canEdit}
+                      size="sm"
+                      // Distinct from the switch beside it: two controls in the same row must not
+                      // share an accessible name, or a screen reader announces them identically.
+                      ariaLabel={t('freeOverAmountLabel')}
+                      unit={t('priceUnit')}
+                      className="[&_input]:bg-card w-40 [&_input]:h-[34px] [&_input]:text-sm"
+                    />
+                  ) : (
+                    <span className="text-mut text-sm">{t('freeOverDisabled')}</span>
+                  )}
+                </div>
+              </div>
+
+              <RateOverrideEditor
+                overrides={draft.overrides}
+                onChange={setOverrides}
+                disabled={!canEdit}
+                provinces={provinces}
+                cities={cities}
+                provinceById={provinceById}
+                cityById={cityById}
+              />
+            </>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <p className="text-mut text-xs text-pretty">
+                {t(draft.kind === 'pickup' ? 'pickupRateNote' : 'noRateNote')}
+              </p>
+
+              {/*
+                The one field a pickup needs and no other method has. A textarea, not an input:
+                merchants write the street, a landmark, opening hours and a phone number into it,
+                and a single line hides all but the first of those.
+              */}
+              {draft.kind === 'pickup' && (
+                <div>
+                  <label
+                    htmlFor={`pickup-${draft.key}`}
+                    className="text-mut mb-1.5 block text-xs font-bold"
+                  >
+                    {t('pickupAddressLabel')}
+                  </label>
+                  <textarea
+                    id={`pickup-${draft.key}`}
+                    rows={3}
+                    maxLength={500}
+                    disabled={!canEdit}
+                    value={draft.pickupAddress}
+                    placeholder={t('pickupAddressPlaceholder')}
+                    onChange={(e) => onChange({ pickupAddress: e.target.value })}
+                    className={cn(editorInput, 'resize-y')}
+                  />
+                  <p className="text-mut mt-1.5 text-xs text-pretty">{t('pickupAddressHint')}</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};

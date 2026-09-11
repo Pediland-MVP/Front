@@ -1,0 +1,205 @@
+import { describe, it, expect } from 'vitest';
+
+import type { OrderDetailView } from '@/types/commerceOrders';
+
+import { buildLabelDocument } from './buildLabelDocument';
+
+const LABELS = {
+  sender: 'فرستنده',
+  receiver: 'گیرنده',
+  state: 'استان',
+  city: 'شهر',
+  address: 'آدرس',
+  phone: 'تلفن',
+  postalCode: 'کدپستی',
+  stickerArea: 'محل نصب لیبل',
+  shippingMethod: 'روش ارسال',
+  orderRef: 'شناسه سفارش',
+  defaultShippingMethod: 'پست',
+};
+
+const order: OrderDetailView = {
+  orderId: '9c4a21e7-1111-2222-3333-444455556666',
+  status: 'processing',
+  cancelReason: null,
+  kind: 'physical',
+  lines: [],
+  itemsTotal: 0,
+  shippingTotal: 0,
+  grandTotal: 0,
+  paymentMethod: 'card_to_card',
+  recipientName: 'علی سری‌یزدی',
+  mobile: '09131590982',
+  cityId: 2,
+  address: 'صفاییه، خیابان کاشانی، پلاک ۵۵',
+  plate: null,
+  unit: null,
+  postalcode: '8916869534',
+  placedAt: '2026-09-02T10:00:00.000Z',
+  shippingTitle: 'پست پیشتاز',
+  shippingKind: null,
+  shippingSettlement: null,
+  paidAt: null,
+  createDate: '2026-09-02T10:00:00.000Z',
+  receipts: [],
+  shop: {
+    instagramName: 'توکیتا',
+    instagramUsername: 'tokita.shop',
+    profilePictureUrl: 'https://cdn.example/pic.jpg',
+    address: 'میدان ونک، برزیل شرقی، پلاک ۱۰۴',
+    postalcode: '1435894511',
+    phone: '02128423842',
+    cityName: 'تهران',
+    provinceName: 'تهران',
+  },
+};
+
+describe('buildLabelDocument', () => {
+  it('leaves the page box to the print dialog instead of pinning one paper', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('size: auto');
+    // The pin itself, not the words: the CSS comments legitimately cite A5 portrait as the
+    // reference sheet both scale units are calibrated to.
+    expect(html).not.toContain('size: A5');
+  });
+
+  it('fills whatever page it lands on, with no hard-coded page height', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // The old layout was `height: 190mm` -- A5 minus its margins, and wrong on every other
+    // paper. Percentage height off `html, body { height: 100% }` is what makes it follow.
+    expect(html).toContain('height: 100%');
+    expect(html).not.toContain('190mm');
+  });
+
+  it('scales continuously with the sheet instead of stepping between presets', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // In print the media viewport IS the page box, so vmin is the short edge of the real paper.
+    // Space scales purely; type scales but never below a legible floor.
+    expect(html).toContain('--su: calc(100vmin / 148)');
+    expect(html).toContain('--tu: max(0.82mm, 100vmin / 148)');
+    // Every dimension is a multiple of one of the two units -- no bare mm sizes left to freeze
+    // the label at one paper size. (0.35/2.5/etc appear only inside calc() multipliers.)
+    expect(html).toContain('--pad: calc(10 * var(--su))');
+    expect(html).toContain('--fs: calc(3.4 * var(--tu))');
+    expect(html).toContain('--logo: calc(17 * var(--su))');
+  });
+
+  it('keeps only structural breakpoints, not size ones', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // Layout decisions that genuinely are not continuous stay as queries...
+    expect(html).toContain('@media (orientation: landscape)');
+    expect(html).toContain('@media (max-height: 130mm)');
+    // ...but the old width-bucket presets are gone. These are what made A3/A2/A1/A0 all print
+    // A4-sized type on a much bigger sheet: every one of them matched the same rule.
+    expect(html).not.toContain('max-width: 120mm');
+    expect(html).not.toContain('min-width: 180mm');
+  });
+
+  it('prints the shop instagram name as the sender, as-is (no fallback reimplemented)', () => {
+    expect(buildLabelDocument(order, LABELS, 'یزد', 'یزد')).toContain('توکیتا');
+  });
+
+  it('renders whatever order.shop.instagramName already carries, even a raw @handle', () => {
+    const withHandleName = {
+      ...order,
+      shop: { ...order.shop!, instagramName: '@tokita.shop' },
+    };
+    expect(buildLabelDocument(withHandleName, LABELS, 'یزد', 'یزد')).toContain('@tokita.shop');
+  });
+
+  it('renders both parties, the buyer city/province passed by the caller, and the sticker area', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('علی سری‌یزدی');
+    expect(html).toContain('محل نصب لیبل');
+    expect(html).toContain('استان:</span> یزد');
+    expect(html).toContain('شهر:</span> یزد');
+  });
+
+  it('renders digits in Persian', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('۰۹۱۳۱۵۹۰۹۸۲');
+    expect(html).not.toContain('09131590982');
+  });
+
+  it('prints a BF- reference built from the first 8 characters of the order id', () => {
+    expect(buildLabelDocument(order, LABELS, 'یزد', 'یزد')).toContain('BF-9C4A21E7');
+  });
+
+  it('prints order.shippingTitle as the shipping method', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('روش ارسال:&nbsp;</span> پست پیشتاز');
+  });
+
+  it('wires an onerror fallback on the sender logo <img>, so an expired Instagram profile picture URL never leaves a broken-image icon on the parcel', () => {
+    const html = buildLabelDocument(order, LABELS, 'یزد', 'یزد');
+    // The fallback letter <div> is present but hidden, right after the <img>, and the <img>'s
+    // onerror hides itself and reveals that exact next sibling -- not merely "some onerror".
+    expect(html).toContain(
+      '<img src="https://cdn.example/pic.jpg" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><div class="fallback" style="display:none">ت</div>',
+    );
+  });
+
+  it('renders only the fallback letter (no <img> at all) when there is no profilePictureUrl to begin with', () => {
+    const noPicture = { ...order, shop: { ...order.shop!, profilePictureUrl: null } };
+    const html = buildLabelDocument(noPicture, LABELS, 'یزد', 'یزد');
+    expect(html).not.toContain('<img');
+    expect(html).toContain('<div class="fallback">ت</div>');
+  });
+
+  it('still produces a document, with blank sender lines, when order.shop is null', () => {
+    const noShop = { ...order, shop: null };
+    const html = buildLabelDocument(noShop, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('فرستنده');
+    expect(html).not.toContain('undefined');
+    expect(html).not.toContain('null');
+  });
+
+  it('falls back to the "defaultShippingMethod" label when shippingTitle is null', () => {
+    const noTitle = { ...order, shippingTitle: null };
+    const html = buildLabelDocument(noTitle, LABELS, 'یزد', 'یزد');
+    expect(html).toContain('روش ارسال:&nbsp;</span> پست');
+  });
+
+  it('escapes HTML in user-controlled text', () => {
+    const nasty = { ...order, address: '<script>alert(1)</script>' };
+    const html = buildLabelDocument(nasty, LABELS, 'یزد', 'یزد');
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+  });
+
+  it('digits() converts to Persian digits before escaping, so an apostrophe in a digits field never renders as corrupted-entity garbage', () => {
+    // shop.phone is free text (@MaxLength(20) only, no format restriction) -- a seller could
+    // type an apostrophe in there. Escaping FIRST (esc(v) then toPersianDigits) would turn the
+    // `'` into the entity `&#39;`, then mangle its ASCII digits 3/9 into `&#۳۹;`, which no longer
+    // parses as an HTML entity and prints as literal garbage instead of an apostrophe.
+    const withApostrophe = {
+      ...order,
+      shop: { ...order.shop!, phone: "021-2842'3842" },
+    };
+    const html = buildLabelDocument(withApostrophe, LABELS, 'یزد', 'یزد');
+    expect(html).not.toContain('&#۳۹;');
+    expect(html).toContain('۰۲۱-۲۸۴۲&#39;۳۸۴۲');
+  });
+
+  // Task 4 (Back repo) review flagged its own instagram-name-fallback test as only covering
+  // `name: null`, never `name: ''` -- both are real shapes the backend can send (the
+  // fallback-to-@username logic there only triggers on falsy `name`, and `''` is falsy too).
+  // This builder does not reimplement that fallback; it must render whatever string arrives,
+  // so the two falsy shapes have to reach an IDENTICAL printed result, not merely "neither
+  // literally prints the word null/undefined".
+  it('renders shop.instagramName === "" the same as shop.instagramName === null', () => {
+    const empty = { ...order, shop: { ...order.shop!, instagramName: '' } };
+    const nullName = { ...order, shop: { ...order.shop!, instagramName: null } };
+    const htmlEmpty = buildLabelDocument(empty, LABELS, 'یزد', 'یزد');
+    const htmlNull = buildLabelDocument(nullName, LABELS, 'یزد', 'یزد');
+
+    expect(htmlEmpty).not.toContain('null');
+    expect(htmlEmpty).not.toContain('undefined');
+    expect(htmlNull).not.toContain('null');
+    expect(htmlNull).not.toContain('undefined');
+
+    const senderLine = /فرستنده: <span>[^<]*<\/span>/;
+    expect(htmlEmpty.match(senderLine)?.[0]).toBe('فرستنده: <span></span>');
+    expect(htmlEmpty.match(senderLine)?.[0]).toBe(htmlNull.match(senderLine)?.[0]);
+  });
+});

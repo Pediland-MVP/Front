@@ -12,6 +12,7 @@ This document maps dashboard frontend pages/components to the backend (`core`) A
 | `apps/dashboard/src/hooks/useConnectInstagram.ts` | `GET /instagram/connectIG` | Returns `{ data: { link } }` — the Instagram OAuth URL; the user is redirected there to begin the auth flow. |
 | `apps/dashboard/src/app/(Console)/settings/accounts/*` | `GET /instagram/accounts` | Returns `InstagramNamespace.Account[]`. **As of per-page subscription binding**, each account now includes `isPromotion: boolean` — `true` when the page has no active subscription (the Befroosh DM footer promotion is appended to automated messages). The dashboard renders an alert + CTA for every account where `isPromotion === true`. |
 | `apps/dashboard/src/components/Connect/SetupInstagramDialog.tsx` (via `useInstagramFollowersLookup`) | `GET /instagram/lookup-followers?username=` | Now also returns `profilePicUrl?: string` and `fullName?: string` (both optional — Apify already fetched them, they just weren't surfaced before), used for a small profile card on the dialog's plan-review step. |
+| `apps/dashboard/src/components/Commerce/Shop/ShopAddressSettings.tsx` (rendered on `/products/settings`, `/products/shop` now redirects there) | `GET`/`PUT /commerce/shop-address` | **New 2026-09-09, rewritten same day from per-Instagram-account to per-workspace; moved onto the shared settings page 2026-09-10** (was its own `/products/shop` page). One `CommerceShopAddress` row per WORKSPACE (province/city/address/postal code/phone/shipping method) — the seller's own return address printed on shipping labels/invoices via `IShopAddress` (`types/shopAddress.ts`). Now a section on the "تنظیمات فروشگاه" page under "کالا و خدمات", alongside `StoreSettings` — two independent forms/permission gates sharing one page, not a merged form; not a per-account dialog either — `InstagramAccounts.tsx`'s old 4th action button was removed. Gated by `usePermissions().can('order:manage')` (was `instagram:manage`), matching the Back permission split. `PUT` errors `SHOP_ADDRESS_INVALID_CITY` on a bad `cityId` (translated in `messages/fa/ErrorCodes.json`). Back doc: `Back/knowledge/core/commerce/shopAddress.doc.md`. |
 
 ---
 
@@ -106,6 +107,50 @@ timeline. It is used in two places: the `/tasks` drawer
 | `apps/dashboard/src/app/(Console)/orders/page.tsx` | `GET /orders`, `POST /orders/:id/updateStatus`, `POST /orders/excelExport` | Now scoped by workspace instead of the requesting user, so teammates see the same orders. New error code `EXCEL_EXPORT_WORKSPACE_REQUIRED` added to `fa.json`. |
 
 ---
+## Commerce — Shipping Methods
+
+The «تنظیمات ارسال پستی» screen (`/products/shipping`) is the only consumer of these routes. Every
+one requires `ORDER_VIEW` to read and `ORDER_MANAGE` to write, matching `ShippingOptionsController`.
+
+| Route | Used by | Notes |
+| --- | --- | --- |
+| `GET /commerce/shipping-options` | `hooks/useShippingOptions.ts` | `PaginatedResult` envelope, one synthetic page, no page/limit. **Each option arrives with its `overrides` eager-loaded** — this is the only way the frontend can read exceptions; there is no `GET :id/overrides`. |
+| `POST /commerce/shipping-options` | same | Response is `ResponseMessage`; the screen reads `data.data.id` to attach the new option's exceptions. |
+| `PATCH /commerce/shipping-options/:id` | same | Partial update — only the keys sent are touched. |
+| `DELETE /commerce/shipping-options/:id` | same | Cascades to the option's overrides. **Refused for a seeded method** (`isSystem`) with `COMMERCE_SHIPPING_OPTION_NOT_DELETABLE`; `ShippingMethodCard` hides the delete button on those, so the code is a safety net rather than a path a merchant can reach through the UI. |
+| `PUT /commerce/shipping-options/:id/overrides` | same | **Full replace**, capped at 200 rows. Rejected outright on any non-`prepaid` settlement, so the screen sends an empty list when the carrier collects. |
+| `GET /cities`, `GET /cities/provinces` | `hooks/useShippingDestinations.ts` | Fetched whole and cached with `useSWRImmutable`. A saved exception stores a bare `cityId`, so the full table is what turns ids back into names. `GET /cities` returns `provinceId` on every row — `types/city.ts` was missing that field. |
+
+**Settlement enum ↔ UI.** The API's `settlement` is three-way and mutually exclusive (`prepaid` /
+`freight_collect` / `cash_on_delivery`), enforced by `CHK_commerce_shipping_option_rate`. The
+screen renders it as a radio group, one control per value, so a new mode added on the Back appears
+as an unlabelled option until `Commerce.Shipping.settlements`/`settlementNotes` gain a key for it.
+Only `prepaid` carries a rate; the other two send `amount: 0`, `freeOverAmount: null` and an empty
+override list.
+
+**Cash-on-delivery.** `GET`/`POST /payments/cardToCard` carry `codMaxOrderValue` only — a
+shop-wide ceiling, consumed by `app/(Console)/settings/card/page.tsx`. Omitting it leaves it
+untouched; `null` clears it. Whether COD is offered is NOT here: it is the shipping method's
+`settlement`, which is also why the old "a COD-only merchant needs bank details" gap no longer
+exists.
+
+**Error codes.** `COMMERCE_SHIPPING_OPTION_NOT_FOUND`, `COMMERCE_SHIPPING_OPTION_UNAVAILABLE`,
+`COMMERCE_SHIPPING_THRESHOLD_REQUIRED`, `COMMERCE_SHIPPING_OVERRIDE_NOT_ALLOWED`,
+`COMMERCE_SHIPPING_OVERRIDE_TARGET` — all translated in `messages/fa/ErrorCodes.json`.
+
+## Commerce — Orders
+
+The `/products/orders` (list) and `/products/orders/[id]` (detail) merchant screens, redesigned
+2026-09-04 — see `knowledge/updates/2026-09-04-ordersScreenRedesign.update.md`.
+
+| Route | Used by | Notes |
+| --- | --- | --- |
+| `GET /commerce/orders` | `apps/dashboard/src/hooks/useCommerceOrders.ts`, consumed by `components/Commerce/Orders/OrdersTable.tsx` and `OrderRowCard.tsx` | **As of 2026-09-04**, returns `OrderListView` (`OrderView` + `receiptUrl: string \| null`, `receiptCount: number`) instead of plain `OrderView`. `receiptUrl` is the newest کارت‌به‌کارت receipt (`null` if none was ever sent, or its file row is gone); `receiptCount` is how many receipts exist, so the row can mark a re-upload without shipping every url. Rendered via `OrderThumbs.tsx` alongside the first line's product image, opening `ReceiptLightbox` in place. Back doc: `Back/knowledge/updates/2026-09-04-orderListViewReceipts.update.md`. |
+| `GET /commerce/orders/:id` | `apps/dashboard/src/hooks/useCommerceOrder.ts`, consumed by `OrderDetail.tsx`/`OrderSummaryRail.tsx` | `OrderDetailView` (`OrderView` + `receipts: OrderReceiptView[]`, full trail newest-first). **As of 2026-09-09**, also carries `shop: OrderShopView \| null` (detail only, not the list route) — consumed by `OrderDetail.tsx`'s print-label/print-invoice buttons as the document's sender block. Two independent sources, resolved server-side (unchanged shape after the same-day rearchitecture): the identity fields (`instagramName`/`instagramUsername`/`profilePictureUrl`) from `customer.instagramId` → `Instagram`; the address fields from the order's own `workspaceId` → `CommerceShopAddress` (one row per workspace). `shop` is `null` only when neither resolves. Back doc: `Back/knowledge/core/commerce/orderPrintPayload.doc.md`. |
+| `POST /commerce/orders/:id/approve` \| `/reject` \| `/ship` \| `/complete` \| `/cancel` \| `/revert` \| `/mark-paid` | `OrderStatusUpdater.tsx` | Driven by a single status `<Select>` (`orderTransitions.ts`'s `targetStatusesFor`/`actionForTransition`) + a transition-specific confirmation dialog, replacing six standalone buttons. `approve` and `mark-paid` require confirmation (previously one-click). **As of 2026-09-07 the select offers EVERY other status from every status** — the only omission is `sending` on a digital order — and `POST :id/revert` is new (`→ awaiting_review`, the first backward move; restocks server-side when the order was holding stock). `ACTIONS_BY_STATUS` in `orderTransitions.ts` must stay a faithful mirror of Back's `ORDER_TRANSITIONS`; both files carry cross-reference comments, and `orderTransitions.test.ts` guards this side. `hasAnyAction` is now true for every order, so `OrderDetailPage` renders the status slot unless the viewer lacks `order:manage`. New error code needing a `fa.json` key: `COMMERCE_INSUFFICIENT_STOCK_FOR_STATUS` (added). Back doc: `Back/knowledge/updates/2026-09-07-orderFreeStatusChoice.update.md`. |
+
+Every `/commerce/orders*` route has a frontend consumer as of this redesign — the table above is
+complete, not partial.
 
 ## Deploy Coupling
 
@@ -154,3 +199,12 @@ are not (`INSTAGRAM_TOKEN_EXPIRED` for Meta OAuthException 190, else
 `ICE_BREAKER_SYNC_FAILED`). `syncedAt` / `syncError` on the GET cover only the
 failures the user did not cause directly — a non-fatal re-push after an
 automation is deleted or the account is reconnected.
+### Commerce shipping (2026-08-27)
+
+The shipping screen and the Back shipping feature are **deploy-coupled in one direction**: the
+Front calls routes that exist only on `feat/commerce-shipping-methods` (merged into
+`feat/commerce-product-core`).
+
+- **Back-only deploy (old Front):** safe. Nothing on the old Front calls these routes.
+- **Front-only deploy (old Back):** every request 404s and the screen is dead. **Ship the Back
+  first, or ship both together.**

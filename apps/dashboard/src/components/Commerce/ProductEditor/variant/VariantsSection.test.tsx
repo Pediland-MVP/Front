@@ -1,0 +1,397 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+import { FormProvider, useForm, type UseFormReturn } from 'react-hook-form';
+
+const { toastSuccess, toastError } = vi.hoisted(() => ({
+  toastSuccess: vi.fn(),
+  toastError: vi.fn(),
+}));
+vi.mock('sonner', () => ({ toast: { success: toastSuccess, error: toastError } }));
+
+import messages from '@/messages/fa.json';
+import type { ProductFormValues } from '../productEditor.schema';
+import { VariantSyncProvider, type VariantRow } from './useVariantSync';
+import { VariantsSection } from './VariantsSection';
+
+const T = messages.Commerce.Editor.Variants;
+const B = messages.Commerce.Editor.Bulk;
+
+/** A SAVED option: ids exist, and `mapDetailToFormValues` mirrors each one into `localKey`. */
+const option = (id: string, name: string, values: Array<[string, string]>) => ({
+  id,
+  localKey: id,
+  name,
+  style: 'button' as const,
+  values: values.map(([valueId, value]) => ({ id: valueId, localKey: valueId, value })),
+});
+
+/** A BRAND-NEW option, as `AttributesSection` builds it: `localKey` only, no backend id. */
+const freshOption = (localKey: string, name: string, values: Array<[string, string]>) => ({
+  localKey,
+  name,
+  style: 'button' as const,
+  values: values.map(([valueKey, value]) => ({ localKey: valueKey, value })),
+});
+
+const row = (valueIds: string[], over: Partial<VariantRow> = {}): VariantRow => ({
+  valueIds,
+  price: null,
+  compare: null,
+  hasDiscount: false,
+  stock: null,
+  infinite: false,
+  mediaIds: [],
+  sku: null,
+  weight: null,
+  salePrice: null,
+  saleStartsAt: null,
+  saleEndsAt: null,
+  allowBackorder: false,
+  isActive: true,
+  ...over,
+});
+
+const TWO_AXES: Partial<ProductFormValues> = {
+  options: [
+    option('color', 'رنگ', [
+      ['c1', 'قرمز'],
+      ['c2', 'آبی'],
+    ]),
+    option('size', 'سایز', [
+      ['s1', 'S'],
+      ['s2', 'M'],
+    ]),
+  ],
+  variants: [
+    row(['c1', 's1'], { price: 420000, stock: 3 }),
+    row(['c1', 's2'], { price: 315500, stock: 2 }),
+    row(['c2', 's1'], { price: null, stock: 0 }),
+    row(['c2', 's2'], { price: 99900, stock: 5 }),
+  ],
+};
+
+const ONE_AXIS: Partial<ProductFormValues> = {
+  options: [
+    option('color', 'رنگ', [
+      ['c1', 'قرمز'],
+      ['c2', 'آبی'],
+    ]),
+  ],
+  variants: [row(['c1'], { price: 420000 }), row(['c2'], { price: 420000 })],
+};
+
+const renderGrid = (over: Partial<ProductFormValues>) => {
+  let api!: UseFormReturn<ProductFormValues>;
+  const onOpenPicker = vi.fn();
+
+  function Harness() {
+    const methods = useForm<ProductFormValues>({
+      defaultValues: {
+        title: '',
+        description: '',
+        categoryId: null,
+        tags: [],
+        specs: [],
+        collectionIds: [],
+        media: [],
+        basePrice: null,
+        baseCompare: null,
+        baseStock: null,
+        baseInfinite: false,
+        options: [],
+        variants: [],
+        ...over,
+      } as ProductFormValues,
+    });
+    api = methods;
+    return (
+      <NextIntlClientProvider locale="fa" messages={messages}>
+        <FormProvider {...methods}>
+          <VariantSyncProvider>
+            <VariantsSection
+              media={[{ id: 'm1', url: 'https://x/1.jpg', name: 'یک' }]}
+              onOpenPicker={onOpenPicker}
+            />
+          </VariantSyncProvider>
+        </FormProvider>
+      </NextIntlClientProvider>
+    );
+  }
+
+  const view = render(<Harness />);
+  return {
+    ...view,
+    onOpenPicker,
+    prices: () => api.getValues('variants').map((r) => r.price),
+    compares: () => api.getValues('variants').map((r) => r.compare),
+    flags: () => api.getValues('variants').map((r) => r.hasDiscount),
+    form: () => api,
+  };
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe('VariantsSection — parent roll-up', () => {
+  it('writes a parent value onto every child of that group', () => {
+    const grid = renderGrid(TWO_AXES);
+
+    // قرمز rolls up 420,000 and 315,500 — a range, so the cell is a button first.
+    fireEvent.click(screen.getAllByTitle(T.rangePriceTitle)[0]);
+    const input = screen.getByLabelText('قیمت قرمز');
+    fireEvent.change(input, { target: { value: '۲۰۰۰۰۰' } });
+    fireEvent.blur(input);
+
+    expect(grid.prices()).toEqual([200000, 200000, null, 99900]);
+    expect(toastSuccess).toHaveBeenCalledTimes(1);
+  });
+
+  it('does nothing when a parent showing a range is blanked, instead of wiping the children', () => {
+    const grid = renderGrid(TWO_AXES);
+
+    fireEvent.click(screen.getAllByTitle(T.rangePriceTitle)[0]);
+    const input = screen.getByLabelText('قیمت قرمز');
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.blur(input);
+
+    expect(grid.prices()).toEqual([420000, 315500, null, 99900]);
+    expect(toastSuccess).not.toHaveBeenCalled();
+  });
+
+  it('gives a group with a single leaf no expander and edits it on its own row', () => {
+    const grid = renderGrid(ONE_AXIS);
+
+    expect(grid.container.querySelectorAll('[data-chev]')).toHaveLength(0);
+    // The row is the leaf itself, so its cell is register-ed under its own index.
+    fireEvent.change(screen.getByLabelText('قیمت قرمز'), { target: { value: '۵۰۰۰۰۰' } });
+
+    expect(grid.prices()).toEqual([500000, 420000]);
+  });
+});
+
+describe('VariantsSection — values created this session', () => {
+  it('labels a row whose valueIds are localKeys, instead of falling back to an em dash', () => {
+    // CREATE mode: `valueIds` hold `id ?? localKey`, so a label map keyed on `id` alone finds
+    // nothing and every row in the table reads "—".
+    renderGrid({
+      options: [
+        freshOption('color-local', 'رنگ', [
+          ['c1-local', 'قرمز'],
+          ['c2-local', 'آبی'],
+        ]),
+      ],
+      variants: [row(['c1-local'], { price: 420000 }), row(['c2-local'], { price: 315500 })],
+    });
+
+    expect(screen.getByLabelText('قیمت قرمز')).toBeInTheDocument();
+    expect(screen.getByLabelText('قیمت آبی')).toBeInTheDocument();
+  });
+});
+
+describe('VariantsSection — validation errors', () => {
+  it('opens the group holding a failing row, once, without re-rendering forever', () => {
+    const grid = renderGrid(TWO_AXES);
+
+    // آبی's first leaf has no price — exactly what the zod refinement flags on submit.
+    act(() => {
+      grid.form().setError('variants.2.price', { type: 'custom', message: 'boom' });
+    });
+
+    // The group expanded, so the red cell is somewhere the merchant can actually see it.
+    expect(screen.getByLabelText('قیمت آبی، S')).toBeInTheDocument();
+  });
+});
+
+describe('VariantsSection — bulk bar', () => {
+  const selectEverything = () => fireEvent.click(screen.getByLabelText(T.selectAll));
+
+  it('is hidden until something is selected', () => {
+    renderGrid(TWO_AXES);
+    expect(screen.queryByRole('group', { name: B.groupLabel })).not.toBeInTheDocument();
+
+    selectEverything();
+    expect(screen.getByRole('group', { name: B.groupLabel })).toBeInTheDocument();
+  });
+
+  it('applies -۱۰٪ rounded to the nearest 1000 tooman and skips rows with no price', () => {
+    const grid = renderGrid(TWO_AXES);
+    selectEverything();
+
+    fireEvent.click(screen.getByRole('button', { name: B.price }));
+    fireEvent.change(screen.getByLabelText(B.modeAria), { target: { value: 'dec' } });
+    fireEvent.change(screen.getByLabelText(B.valueAria), { target: { value: '۱۰' } });
+    fireEvent.click(screen.getByRole('button', { name: B.apply }));
+
+    //  420,000 → 378,000 exactly
+    //  315,500 → 283,950 → 284,000  (rounded UP to the nearest 1000)
+    //     null → skipped, never turned into 0
+    //   99,900 →  89,910 →  90,000
+    expect(grid.prices()).toEqual([378000, 284000, null, 90000]);
+
+    const [message] = toastSuccess.mock.calls[0];
+    expect(message).toContain('۳'); // three rows changed
+    expect(message).toContain('۱'); // one row reported as skipped
+  });
+
+  it('sets an exact price on every selected row, including the ones with no price', () => {
+    const grid = renderGrid(TWO_AXES);
+    selectEverything();
+
+    fireEvent.click(screen.getByRole('button', { name: B.price }));
+    fireEvent.change(screen.getByLabelText(B.valueAria), { target: { value: '۱۵۰۰۰۰' } });
+    fireEvent.click(screen.getByRole('button', { name: B.apply }));
+
+    expect(grid.prices()).toEqual([150000, 150000, 150000, 150000]);
+  });
+});
+
+// ONE_AXIS is reused from above: a single axis makes every row its own top row, so the leaf
+// cells are on screen without expanding anything.
+describe('VariantsSection — per-row discount', () => {
+  it('leaves the compare cell shut until the row is marked as discounted', () => {
+    renderGrid(ONE_AXIS);
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeDisabled();
+    expect(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز'))).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+  });
+
+  it('opens only the row whose button was pressed', () => {
+    const grid = renderGrid(ONE_AXIS);
+
+    fireEvent.click(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز')));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeEnabled();
+    // The sibling is untouched — this is a per-variation flag, not a table-wide mode.
+    expect(screen.getByLabelText('قیمت بدون تخفیف آبی')).toBeDisabled();
+    expect(grid.flags()).toEqual([true, false]);
+  });
+
+  it('shuts the cell AND clears the price when the button is pressed again', () => {
+    const grid = renderGrid({
+      ...ONE_AXIS,
+      variants: [
+        row(['c1'], { price: 100000, compare: 150000, hasDiscount: true }),
+        row(['c2'], { price: 200000 }),
+      ],
+    });
+
+    fireEvent.click(screen.getByLabelText(T.hasDiscountAria.replace('{name}', 'قرمز')));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز')).toBeDisabled();
+    // Clearing is the half that actually removes the discount: buildUpdatePayload omits
+    // compareAtPrice when null and the backend writes `?? null` for a missing key. A value left
+    // behind would keep the variant discounted however the button reads.
+    expect(grid.compares()).toEqual([null, null]);
+    expect(grid.flags()).toEqual([false, false]);
+  });
+
+  it('opens a row that a parent roll-down gave a compare price to', () => {
+    // hasDiscount is false on both rows, so only the `compare != null` half of the check can
+    // open these cells. Without it a rolled-down price would sit in a cell nobody could edit.
+    const grid = renderGrid({
+      options: [
+        option('color', 'رنگ', [
+          ['c1', 'قرمز'],
+          ['c2', 'آبی'],
+        ]),
+        option('size', 'سایز', [
+          ['s1', 'S'],
+          ['s2', 'M'],
+        ]),
+      ],
+      variants: [
+        row(['c1', 's1'], { price: 100000 }),
+        row(['c1', 's2'], { price: 100000 }),
+        row(['c2', 's1'], { price: 200000 }),
+        row(['c2', 's2'], { price: 200000 }),
+      ],
+    });
+
+    const parent = screen.getByLabelText('قیمت بدون تخفیف قرمز');
+    fireEvent.change(parent, { target: { value: '۱۵۰۰۰۰' } });
+    fireEvent.blur(parent);
+
+    expect(grid.compares()).toEqual([150000, 150000, null, null]);
+    expect(grid.flags()).toEqual([false, false, false, false]);
+
+    // Expand both groups so the leaves are on screen, then check the cells the roll-down fed.
+    grid.container
+      .querySelectorAll<HTMLButtonElement>('[data-chev]')
+      .forEach((chevron) => fireEvent.click(chevron));
+
+    expect(screen.getByLabelText('قیمت بدون تخفیف قرمز، S')).toBeEnabled();
+    expect(screen.getByLabelText('قیمت بدون تخفیف آبی، S')).toBeDisabled();
+  });
+});
+
+/**
+ * Reported by the user: "it also didn't split the price when I'm typing it".
+ *
+ * These cells are UNCONTROLLED (`register`, so 2000 rows stay responsive), and
+ * `onInputP2EHandler` strips every non-digit from the DOM value on each keystroke — separators
+ * included. Nothing put them back until `onBlur`, so the number grew as a bare digit string while
+ * being typed and only "split" once the merchant left the cell. The base price card next to it
+ * IS controlled and formats on every keystroke, so the two read as different products.
+ */
+describe('VariantsSection — live number formatting', () => {
+  const priceCell = (name: string) =>
+    screen.getByLabelText(T.priceAria.replace('{name}', name)) as HTMLInputElement;
+
+  it('splits the price with separators while the merchant is still typing', () => {
+    renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '۴۲۰۰۰۰' } });
+
+    expect(cell.value).toBe((420000).toLocaleString('fa-IR'));
+  });
+
+  it('converts Persian digits and still stores a plain English number', () => {
+    const grid = renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '۹۹۹۰۰' } });
+
+    expect(cell.value).toBe((99900).toLocaleString('fa-IR'));
+    expect(grid.prices()[0]).toBe(99900);
+  });
+
+  it('keeps an emptied cell empty rather than formatting it to zero', () => {
+    renderGrid(ONE_AXIS);
+    const cell = priceCell('قرمز');
+
+    fireEvent.input(cell, { target: { value: '' } });
+
+    expect(cell.value).toBe('');
+  });
+});
+
+/**
+ * Also reported: setting an offer on one variation "sometimes gives me an error without
+ * explanation". `compareInvalid` (compare not above price) BLOCKS the save, but the cell was
+ * tinted `zero` — which `globals.css` defines as the soft-warning amber — while the failure toast
+ * tells the merchant «موردهای قرمز را درست کنید» (fix the RED ones). They were sent looking for a
+ * red cell that never existed.
+ */
+describe('VariantsSection — a blocking cell error reads as blocking', () => {
+  it('tints a compare error red, the colour the failure toast names', () => {
+    const grid = renderGrid(ONE_AXIS);
+
+    act(() => {
+      grid.form().setError('variants.0.compare', {
+        type: 'custom',
+        message: messages.Commerce.Editor.Validation.compareInvalid,
+      });
+    });
+
+    expect(screen.getByLabelText(T.compareAria.replace('{name}', 'قرمز'))).toHaveAttribute(
+      'data-bad',
+      'empty',
+    );
+  });
+});

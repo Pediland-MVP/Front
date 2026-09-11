@@ -41,6 +41,8 @@ interface Content {
   step: number;
   type: AutomationContentTypesEnum;
   contentProducts: ContentProduct[];
+  // The BUY_IN_DIRECT pick list (Task 12) -- `{ productId }[]`, ordered to match `position`.
+  buyInDirectProducts: { productId: string }[];
   file: File | null;
   instagramPost: InstagramPost | null;
 }

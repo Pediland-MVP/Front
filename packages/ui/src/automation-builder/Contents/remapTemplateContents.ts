@@ -116,10 +116,11 @@ function remapVitrin(raw: any): any {
  * `ContentItemSchema` exactly like a freshly hand-added content item, and carries no
  * residual pointer back to the source template/automation it was copied from. Also
  * strips workspace-/account-scoped reference data (`products`/`productIds`/
- * `contentProducts`, `instagramPost`/`instagramPostId`/`mediaId`) that would otherwise
- * point at products/media belonging to the template's original workspace rather than the
- * destination automation's — see the strip in the main map body below for why this is
- * safe (PRODUCT items keep rendering as an empty "pick products" shell).
+ * `contentProducts`/`buyInDirectProducts`, `instagramPost`/`instagramPostId`/`mediaId`)
+ * that would otherwise point at products/media belonging to the template's original
+ * workspace rather than the destination automation's — see the strip in the main map body
+ * below for why this is safe (PRODUCT/BUY_IN_DIRECT items keep rendering as an empty "pick
+ * products" shell).
  *
  * Pure function: no network calls, no side effects — independently unit-testable (see
  * `__tests__/remapTemplateContents.test.ts`).
@@ -147,6 +148,13 @@ export function remapTemplateContents(rawContents: any[]): any[] {
       products: _products,
       productIds: _productIds,
       contentProducts: _contentProducts,
+      // `buyInDirectProducts` (Task 12) is the same class of workspace-scoped product ref
+      // as the three above — the commerce productIds it carries belong to the template's
+      // source workspace, not the destination automation's. `BuyInDirectContent` renders
+      // an empty picker + the "pick at least one" hint for an absent/empty array exactly
+      // like `ProductContent` does, so stripping it here is the same safe no-op-item
+      // strategy.
+      buyInDirectProducts: _buyInDirectProducts,
       // Account-scoped Instagram post ref. Templates can't actually contain
       // INSTAGRAM_POST content (see the backend's `TemplateContentDto`, which excludes
       // it), so this never fires today — kept as a defensive strip in case that ever

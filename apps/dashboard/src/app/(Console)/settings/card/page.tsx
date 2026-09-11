@@ -8,11 +8,13 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { mutate } from 'swr';
 import useSWRImmutable from 'swr/immutable';
 import { z } from 'zod';
 
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { MoneyField } from '@/components/Commerce/Shipping/MoneyField';
 import { ButtonLoading } from '@/components/ui-custom/ButtonLoading';
 import { ErrorMessage } from '@/components/ui-custom/ErrorMessage';
 import { LoaderSpin } from '@/components/ui-custom/LoaderSpin';
@@ -35,6 +37,16 @@ export const bankDetailsSchema = z.object({
     .refine((val) => !val || val.length === 24, {
       message: 'must be 24 digits',
     }),
+  /**
+   * A ceiling on the order total the merchant will accept پرداخت در محل for — `null` means any
+   * total. It rides this form because the backend writes it through this same endpoint,
+   * `POST /payments/cardToCard`, on the reasoning that this page is the one place a merchant says
+   * how their shop gets paid.
+   *
+   * WHETHER پرداخت در محل is offered is not here: that is the shipping method's own settlement,
+   * set per method on /products/shipping. Only the carrier knows whether it collects.
+   */
+  codMaxOrderValue: z.number().int().min(0).nullable(),
 });
 
 export default function BankCardPage() {
@@ -49,6 +61,7 @@ export default function BankCardPage() {
       cardNumber: '',
       iban: '',
       accountHolder: '',
+      codMaxOrderValue: null,
     },
     resolver: zodResolver(bankDetailsSchema),
   });
@@ -72,6 +85,7 @@ export default function BankCardPage() {
       cardNumber: cardToCardData.cardNumber ?? '',
       iban: cardToCardData.iban ?? '',
       accountHolder: cardToCardData.accountHolder ?? '',
+      codMaxOrderValue: cardToCardData.codMaxOrderValue ?? null,
     });
   }, [cardToCardData]);
 
@@ -82,6 +96,9 @@ export default function BankCardPage() {
       const res = await api.post('/payments/cardToCard', data);
       if (res.status >= 200 && res.status < 300) {
         toast.success(t('cardToCardUpdated'));
+        // Other pages (e.g. the products list) hold their own `useSWRImmutable('/payments/cardToCard')`
+        // and never revalidate on their own — without this they keep showing the pre-save data.
+        await mutate('/payments/cardToCard');
       } else {
         toast.error(t('cardToCardUpdateFailed'));
       }
@@ -220,6 +237,41 @@ export default function BankCardPage() {
                         )}
                       />
                     </div>
+
+                    {/*
+                      Only the CEILING lives here. Whether پرداخت در محل is offered at all is the
+                      shipping method's own settlement on /products/shipping — a carrier either
+                      collects at the door or it does not, and this page cannot know which.
+                    */}
+                    <div className="border-lnv bg-tint mt-6 rounded-xl border p-3">
+                      <FormField
+                        control={control}
+                        name="codMaxOrderValue"
+                        render={({ field }) => (
+                          <FormItem className="space-y-1.5">
+                            <FormLabel className="text-sm font-semibold">
+                              {t('cod.ceilingLabel')}
+                            </FormLabel>
+                            <FormControl>
+                              <MoneyField
+                                value={field.value}
+                                onChange={field.onChange}
+                                disabled={!canManage}
+                                size="sm"
+                                ariaLabel={t('cod.ceilingLabel')}
+                                placeholder={t('cod.ceilingPlaceholder')}
+                                unit={t('cod.unit')}
+                                className="[&_input]:bg-card w-52"
+                              />
+                            </FormControl>
+                            <span className="text-muted-foreground block text-xs text-pretty">
+                              {t('cod.ceilingHint')}
+                            </span>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
                     <div className="mt-6">
                       <ButtonLoading
                         isLoading={isSubmitting}

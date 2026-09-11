@@ -2,10 +2,16 @@
 import NextError from 'next/error';
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
+import { isChunkLoadError, reloadForChunkError } from '@/utils/chunkReload';
 
 export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
   useEffect(() => {
-    Sentry.captureException(error);
+    // A chunk that failed to download mid-render or mid-navigation lands here. A reload
+    // fetches it again (or, after a deploy, the new build's chunks); the loop guard lives
+    // in the inline script — see utils/chunkReload.ts.
+    const reloaded =
+      isChunkLoadError(error) && reloadForChunkError(`global-error ${error.message}`);
+    Sentry.captureException(error, { tags: { chunkLoadAutoReload: reloaded } });
   }, [error]);
 
   return (

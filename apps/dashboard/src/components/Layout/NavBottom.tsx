@@ -76,10 +76,10 @@ export const NavBottom = () => {
       gated: true,
     },
     {
-      href: '/orders',
+      href: '/products/orders',
       icon: ShoppingBagIcon,
       labelKey: 'orders',
-      isActive: (path: string) => path === '/orders',
+      isActive: (path: string) => path.startsWith('/products/orders'),
       gated: false,
     },
     {

@@ -1,7 +1,7 @@
 import { SWRProvider } from '@/hooks/swr/api-client';
 import '@/styles/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, getTranslations } from 'next-intl/server';
 import { Toaster } from 'sonner';
 
 import { ConsoleProvider } from '@/components/Layout/ConsoleProvider';
@@ -27,10 +27,11 @@ export default async function ConsoleLayout({
   children: React.ReactNode;
 }>) {
   const messages = await getMessages();
+  const tError = await getTranslations('Error');
 
   return (
     <SWRProvider>
-      <AuthProvider>
+      <AuthProvider reloadLabel={tError('reload_page')}>
         <NextIntlClientProvider messages={messages}>
           <ZodErrorsMapProvider>
             {/* All third party configuration goes inside SiteProvider */}
