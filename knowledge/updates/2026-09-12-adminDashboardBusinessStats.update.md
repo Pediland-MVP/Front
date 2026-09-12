@@ -5,6 +5,12 @@ Backend half and full reference:
 `Back/knowledge/updates/2026-09-12-adminDashboardBusinessStats.update.md`.
 API contract row: `Back/knowledge/front-back-relations.md` (admin dashboard section).
 
+> [!IMPORTANT]
+> **Deploy Back first.** This change is deploy-coupled with Back
+> `feat/admin-dashboard-business-stats` (PR Back#52), which adds
+> `GET /metrics/platform/business`. Ship the admin frontend before the backend
+> and all four cards fail their fetch — the route does not exist yet.
+
 ## Problem
 
 The admin dashboard home («آمار کلی پلتفرم») rendered only the six CQRS metric
@@ -33,6 +39,12 @@ They do follow the range control — `usePlatformBusinessStats(range)` reuses th
 same `rangeParams` helper as `usePlatformSeries`, so changing the preset or
 picking a custom range refetches all four.
 
+A failed fetch renders «—» with no footer, never a skeleton. SWR leaves
+`isLoading` false and `stats` null on error, so gating the skeleton on
+`value === null` would turn an error into a spinner that never resolves —
+`StatCard` takes `isError` and gates on loading alone. (`MetricCard` still has
+that flaw; fixing it is out of scope here.)
+
 `StatCard` is local to `business-stats-cards.tsx` rather than a shared
 extraction from `MetricCard`: the two differ in the footer (a delta versus a
 split) and `MetricCard` is bound to `MetricMeta`, which these cards have no
@@ -44,7 +56,7 @@ second caller.
 | File | Change |
 |---|---|
 | `apps/admin/src/hooks/use-platform-metrics.ts` | `BusinessStats` type + `usePlatformBusinessStats(range)`. |
-| `apps/admin/src/app/(main)/_components/business-stats-cards.tsx` | New — `BusinessStatsCards` + local `StatCard`. |
+| `apps/admin/src/app/(main)/_components/business-stats-cards.tsx` | New — `BusinessStatsCards` + local `StatCard` (loading skeleton, «—» on error). |
 | `apps/admin/src/app/(main)/_components/metrics-overview.tsx` | Renders the row. |
 | `apps/admin/src/messages/fa.json` | Six new `Dashboard` keys: `paidSubscriptions`, `paidActive`, `paidReserved`, `totalInstagrams`, `activeInstagrams`, `commerceOrders`. |
 

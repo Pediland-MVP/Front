@@ -23,9 +23,16 @@ interface StatCardProps {
   value: number | null;
   footer: React.ReactNode;
   isLoading: boolean;
+  isError: boolean;
 }
 
-function StatCard({ label, color, value, footer, isLoading }: StatCardProps) {
+function StatCard({ label, color, value, footer, isLoading, isError }: StatCardProps) {
+  // A failed fetch leaves `isLoading` false and `value` null, so the skeleton
+  // must be gated on loading alone — otherwise an error reads as a spinner that
+  // never resolves.
+  const showSkeleton = isLoading && !isError;
+  const hasValue = !isLoading && !isError && value !== null;
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -34,11 +41,11 @@ function StatCard({ label, color, value, footer, isLoading }: StatCardProps) {
           {label}
         </CardDescription>
         <CardTitle className="text-2xl tabular-nums">
-          {isLoading || value === null ? <Skeleton className="h-7 w-24" /> : nf.format(value)}
+          {showSkeleton ? <Skeleton className="h-7 w-24" /> : hasValue ? nf.format(value) : '—'}
         </CardTitle>
       </CardHeader>
       <CardContent className="text-muted-foreground text-xs">
-        {isLoading || value === null ? <Skeleton className="h-4 w-20" /> : footer}
+        {showSkeleton ? <Skeleton className="h-4 w-20" /> : hasValue ? footer : null}
       </CardContent>
     </Card>
   );
@@ -53,7 +60,7 @@ function StatCard({ label, color, value, footer, isLoading }: StatCardProps) {
  */
 export function BusinessStatsCards({ range }: { range: RangeConfig }) {
   const t = useTranslations('Dashboard');
-  const { stats, isLoading } = usePlatformBusinessStats(range);
+  const { stats, isLoading, isError } = usePlatformBusinessStats(range);
 
   const delta = (n: number, color: string) => (
     <span>
@@ -68,6 +75,7 @@ export function BusinessStatsCards({ range }: { range: RangeConfig }) {
         color={PAID_SUBSCRIPTIONS_COLOR}
         value={stats?.paidSubscriptions.total ?? null}
         isLoading={isLoading}
+        isError={isError}
         footer={
           <span>
             {t('paidActive')} {nf.format(stats?.paidSubscriptions.active ?? 0)}
@@ -84,6 +92,7 @@ export function BusinessStatsCards({ range }: { range: RangeConfig }) {
         color={INSTAGRAMS_COLOR}
         value={stats?.instagrams.total ?? null}
         isLoading={isLoading}
+        isError={isError}
         footer={delta(stats?.instagrams.delta ?? 0, INSTAGRAMS_COLOR)}
       />
 
@@ -92,6 +101,7 @@ export function BusinessStatsCards({ range }: { range: RangeConfig }) {
         color={ACTIVE_INSTAGRAMS_COLOR}
         value={stats?.activeInstagrams.total ?? null}
         isLoading={isLoading}
+        isError={isError}
         footer={delta(stats?.activeInstagrams.delta ?? 0, ACTIVE_INSTAGRAMS_COLOR)}
       />
 
@@ -100,6 +110,7 @@ export function BusinessStatsCards({ range }: { range: RangeConfig }) {
         color={COMMERCE_ORDERS_COLOR}
         value={stats?.commerceOrders.total ?? null}
         isLoading={isLoading}
+        isError={isError}
         footer={delta(stats?.commerceOrders.delta ?? 0, COMMERCE_ORDERS_COLOR)}
       />
     </div>
