@@ -11,6 +11,7 @@ import { METRICS } from './metrics.constants';
 import { useViewConfig } from './use-view-config';
 import { CustomizationBar } from './customization-bar';
 import { MetricCard } from './metric-card';
+import { BusinessStatsCards } from './business-stats-cards';
 import { MetricChart } from './metric-chart';
 import { CombinedChart } from './combined-chart';
 import { HowFoundUsChart } from './how-found-us-chart';
@@ -50,6 +51,10 @@ export function MetricsOverview() {
           />
         ))}
       </div>
+
+      {/* Business counters: live counts, not time-series, so they are always
+          shown and never enter the metric picker. */}
+      <BusinessStatsCards range={config.range} />
 
       {/* Charts: grid of per-metric charts, or one combined overlay */}
       {config.layout === 'combined' ? (
