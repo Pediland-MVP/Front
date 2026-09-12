@@ -37,6 +37,23 @@ export interface HowFoundUsBreakdown {
   items: HowFoundUsBreakdownItem[];
 }
 
+/**
+ * The four business counters rendered in their own always-visible card row,
+ * from `GET /metrics/platform/business`. Mirrors the backend `BusinessStats`.
+ *
+ * `paidSubscriptions` is period-only: it answers "how many subscriptions did
+ * customers actually pay for in this window". The other three carry an
+ * all-time `total` plus a `delta` scoped to the selected range.
+ */
+export interface BusinessStats {
+  from: string;
+  to: string;
+  paidSubscriptions: { total: number; active: number; reserved: number };
+  instagrams: { total: number; delta: number };
+  activeInstagrams: { total: number; delta: number };
+  commerceOrders: { total: number; delta: number };
+}
+
 // Responses are ResponseMessage-wrapped (CLAUDE.md §8); the SWR fetcher returns
 // the axios body, so the payload lives under `.data`.
 interface Wrapped<T> {
@@ -96,4 +113,17 @@ export function usePlatformSeries(range: RangeConfig) {
   }, [series]);
 
   return { series, byMetric, deltas, isLoading, isError: !!error };
+}
+
+function businessUrl(range: RangeConfig): string {
+  return `/metrics/platform/business?${rangeParams(range).toString()}`;
+}
+
+export function usePlatformBusinessStats(range: RangeConfig) {
+  const { data, error, isLoading } = useSWR<Wrapped<BusinessStats>>(businessUrl(range));
+  return {
+    stats: data?.data ?? null,
+    isLoading,
+    isError: !!error,
+  };
 }
