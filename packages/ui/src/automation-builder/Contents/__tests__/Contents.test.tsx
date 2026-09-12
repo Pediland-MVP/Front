@@ -172,8 +172,10 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
     fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.queryByText('buttons.titles.instagram_post')).not.toBeInTheDocument();
-    // PRODUCT stays available in template mode — the backend DTO does allow it.
-    expect(screen.getByText('buttons.titles.product')).toBeInTheDocument();
+    // Control: the filter must be selective, not hide everything. TEXT is always offered.
+    // (PRODUCT used to be this control; it is no longer offered anywhere — see the
+    // 'no longer offers PRODUCT' describe block below.)
+    expect(screen.getByText('buttons.titles.text')).toBeInTheDocument();
   });
 
   it('still shows "INSTAGRAM_POST" for builderMode="automation" (unchanged behavior)', () => {
@@ -185,6 +187,29 @@ describe('Contents — "INSTAGRAM_POST" content-type option (template-mode gatin
   });
 });
 
+describe('Contents — PRODUCT is no longer offered (legacy shop checkout retired)', () => {
+  // The `(Shop)` web checkout was deleted and its API routes now 404, so a NEW `product`
+  // content could only ever produce a dead link. The option is gone from
+  // `contentTypeOptions` entirely — in BOTH builder modes, unlike INSTAGRAM_POST /
+  // BUY_IN_DIRECT which are only template-gated. `AutomationContentTypesEnum.PRODUCT`
+  // deliberately survives: existing contents must keep rendering until they are ported to
+  // buy-in-direct.
+  it.each(['automation', 'template'] as const)(
+    'does not offer PRODUCT in builderMode="%s"',
+    (builderMode) => {
+      render(<Wrapper builderMode={builderMode} />);
+
+      fireEvent.click(screen.getByText('افزودن مرحله'));
+
+      expect(screen.queryByText('buttons.titles.product')).not.toBeInTheDocument();
+      // Buy-in-direct replaces it, and is offered in automation mode.
+      if (builderMode === 'automation') {
+        expect(screen.getByText('buttons.titles.buy_in_direct')).toBeInTheDocument();
+      }
+    },
+  );
+});
+
 describe('Contents — "BUY_IN_DIRECT" content-type option (template-mode gating)', () => {
   it('hides "buy_in_direct" when builderMode="template" (backend TemplateContentDto rejects it — a template has no Instagram/workspace context, so the picker\'s product/cardToCard calls can never resolve)', () => {
     render(<Wrapper builderMode="template" />);
@@ -192,8 +217,10 @@ describe('Contents — "BUY_IN_DIRECT" content-type option (template-mode gating
     fireEvent.click(screen.getByText('افزودن مرحله'));
 
     expect(screen.queryByText('buttons.titles.buy_in_direct')).not.toBeInTheDocument();
-    // PRODUCT stays available in template mode — the backend DTO does allow it.
-    expect(screen.getByText('buttons.titles.product')).toBeInTheDocument();
+    // Control: the filter must be selective, not hide everything. TEXT is always offered.
+    // (PRODUCT used to be this control; it is no longer offered anywhere — see the
+    // 'no longer offers PRODUCT' describe block below.)
+    expect(screen.getByText('buttons.titles.text')).toBeInTheDocument();
   });
 
   it('still shows "buy_in_direct" for builderMode="automation" (unchanged behavior)', () => {

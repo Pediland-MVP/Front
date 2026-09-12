@@ -3,7 +3,6 @@
 import { AutomationContentTypesEnum } from '../constants/automationContent.enum';
 import { ChatTextIcon } from '@phosphor-icons/react/dist/ssr/ChatText';
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
-import { ShoppingBagIcon } from '@phosphor-icons/react/dist/ssr/ShoppingBag';
 import { ShoppingCartIcon } from '@phosphor-icons/react/dist/ssr/ShoppingCart';
 import { RadioButtonIcon } from '@phosphor-icons/react/dist/ssr/RadioButton';
 import { ImageIcon } from '@phosphor-icons/react/dist/ssr/Image';
@@ -55,11 +54,6 @@ export const contentTypeOptions: ContentTypeOption[] = [
     value: AutomationContentTypesEnum.INSTAGRAM_POST,
     label: 'Instagram Post',
     icon: <InstagramLogoIcon size={30} />,
-  },
-  {
-    value: AutomationContentTypesEnum.PRODUCT,
-    label: 'Product',
-    icon: <ShoppingBagIcon size={30} />,
   },
   {
     value: AutomationContentTypesEnum.BUY_IN_DIRECT,

@@ -116,10 +116,13 @@ const refreshAccessToken = (): Promise<string> => {
  * page load: if it fails, requests go out bare and the 401 path below still
  * refreshes, exactly as before.
  *
- * Opt-in (turned on by AuthProvider) rather than global on purpose: the (Shop)
- * checkout renders without AuthProvider and identifies the buyer by their own
- * cookie — a merchant who happens to be logged in must never have their access
- * token attached there.
+ * Opt-in (turned on by AuthProvider) rather than global on purpose. The original
+ * reason was the `(Shop)` buyer checkout, which rendered without AuthProvider and
+ * identified the buyer by their own cookie — a merchant who happened to be logged
+ * in must never have their access token attached there. That page has since been
+ * retired, but the opt-in stays: any future AuthProvider-less surface gets the
+ * safe default, and flipping it to global would change the boot sequence this
+ * bootstrap was added to fix.
  */
 
 let sessionBootstrapEnabled = false;

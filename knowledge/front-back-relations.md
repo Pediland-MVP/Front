@@ -98,13 +98,38 @@ timeline. It is used in two places: the `/tasks` drawer
 
 ---
 
-## Shop checkout & Vitrin
+## Shop checkout — RETIRED (2026-09-12) · Vitrin
+
+> [!CAUTION]
+> **`apps/dashboard/src/app/(Shop)/` and `apps/dashboard/src/components/Shop/` are deleted.** The
+> public buyer checkout at `/:instagramUsername/:productId/order` is gone and every Back route it
+> called now 404s. Buying happens inside the Instagram DM (buy-in-direct). Also removed:
+> `apps/dashboard/src/types/shops/` (orphaned) and the `Checkout` i18n namespace from `fa.json` /
+> `en.json` (47 keys, unused).
+>
+> Back routes removed with it: `GET /shops/:shopId`, `GET /products/:id`,
+> `GET /auth/leadInstagram/:shopId/:productId`, `GET /leads/my/contact`, and twelve
+> `AuthGuard('lead')` routes on `orders`. See
+> `Back/knowledge/updates/2026-09-12-retireLegacyShopCheckout.update.md`.
+
+**`proxy.ts` keeps two shop-shaped allowances on purpose.** The `/:shop/:product/order`
+pass-through and the `payments/verify` matcher exclusion both survive so a stale link renders the
+app's **404** page. Delete either one and the request falls into `consoleMiddleware`, which sees no
+`token` cookie and redirects the buyer to `/auth` — showing a login screen to someone who tapped a
+product card is a worse answer than "this page is gone". Those buttons live in already-sent
+Instagram messages and stay tappable forever (`MVP/CLAUDE.md` §11.5), so this is permanent.
+
+**The automation form no longer offers `PRODUCT`.** Removed from `contentTypeOptions`
+(`packages/ui/src/automation-builder/Contents/ContentTypeOptions.tsx`) in both builder modes —
+unlike `INSTAGRAM_POST` / `BUY_IN_DIRECT`, which are only template-gated. Back refuses the type on
+create **and** update, so an un-ported `product` automation cannot be saved until migration Phase 13
+converts it. `AutomationContentTypesEnum.PRODUCT` stays in the enum: existing contents must keep
+rendering.
 
 | Frontend | Backend Endpoint | Notes |
 |---|---|---|
-| `apps/dashboard/src/components/Shop/CheckoutPage.tsx` (SWR `${API_URL}/shops/${shopId}`) | `GET /shops/:shopId` | **Payload change 2026-08-15.** Payment details moved `shop.user.paymentDetail` → `shop.workspace.paymentDetail` as part of the user → workspace refactor. `IShop` in `types/shops/shop.ts` and the 8 read sites in `CheckoutPage.tsx` / `order/components/payment.tsx` were updated to match. |
-| `apps/dashboard/src/app/(Console)/products/[id]/product.tsx`, `apps/dashboard/src/components/Products/ProductForm.tsx` | `GET/POST/PUT /vitrin[/:id]` | These routes were accidentally removed on Back `workspace-refactor` (the controller class was committed empty) and 404'd. Restored on Back `fix/shop-workspace-scoping`, now gated by `PRODUCT_CREATE` / `PRODUCT_EDIT` / `PRODUCT_DELETE`. No frontend change needed. |
-| `apps/dashboard/src/app/(Console)/orders/page.tsx` | `GET /orders`, `POST /orders/:id/updateStatus`, `POST /orders/excelExport` | Now scoped by workspace instead of the requesting user, so teammates see the same orders. New error code `EXCEL_EXPORT_WORKSPACE_REQUIRED` added to `fa.json`. |
+| `apps/dashboard/src/app/(Console)/products/[id]/product.tsx` | `GET/POST/PUT /vitrin[/:id]` | Vitrin is **untouched** by the shop retirement — its cards carry merchant-defined template buttons, never the deleted order URL. These routes were accidentally removed on Back `workspace-refactor` (empty controller) and restored on `fix/shop-workspace-scoping`, gated by `PRODUCT_CREATE` / `PRODUCT_EDIT` / `PRODUCT_DELETE`. (`components/Products/ProductForm.tsx` was deleted earlier, with the legacy products UI.) |
+| `apps/dashboard/src/app/(Console)/orders/page.tsx` | `GET /orders`, `POST /orders/:id/updateStatus`, `POST /orders/excelExport` | The legacy **merchant** orders screen — still live, which is exactly why those three routes were kept. Workspace-scoped, so teammates see the same orders. Error code `EXCEL_EXPORT_WORKSPACE_REQUIRED`. Retire together with the Back routes once `/products/orders` fully replaces it (see `before-prod-cutover.md`). |
 
 ---
 ## Commerce — Shipping Methods
