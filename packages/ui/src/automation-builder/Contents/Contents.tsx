@@ -263,7 +263,10 @@ export const Contents = ({
   // workspace/Instagram context (see `TEMPLATE_PLACEHOLDER_INSTAGRAM_ID` in the admin's
   // `TemplateForm.tsx`), and the backend's `TemplateContentDto` rejects that content type
   // outright — offering it here would just be a guaranteed-fail submit for the admin.
-  // `PRODUCT` stays available in template mode; the backend DTO does allow it.
+  // `PRODUCT` is no longer offered at all — it was removed from `contentTypeOptions` when the
+  // `(Shop)` web checkout was retired, so there is nothing to filter here. Existing PRODUCT
+  // contents still render and submit (they are being ported to `BUY_IN_DIRECT` separately);
+  // only creating a NEW one is gone.
   //
   // Also hide `DELAY` in `mode === REMINDER`: `DelayContent`'s field paths and the shared
   // 23h budget math are hardcoded to the `contents` array (see the `showTemplateInsert`

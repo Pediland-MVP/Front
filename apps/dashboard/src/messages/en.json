@@ -1150,67 +1150,6 @@
     },
     "free": "Free"
   },
-  "Checkout": {
-    "back": "Back",
-    "outOfStock": "Out of Stock",
-    "customerDetails": "Customer Details",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "email": "Email",
-    "mobile": "Mobile",
-    "nextStep": "Next Step",
-    "person": "Recipient Name",
-    "address": "Address",
-    "city": "City",
-    "state": "State",
-    "country": "Country",
-    "postalCode": "Postal Code",
-    "paymentMethod": "Payment Method",
-    "paynow": "Pay and Register Order",
-    "uploadSuccess": "Your receipt has been uploaded",
-    "required": "This field is required",
-    "orderCardToCardNotUploaded": "Please first upload your card-to-card receipt",
-    "orderProcessing": "Your order has been successfully registered",
-    "orderProcessingDescription": "Your purchase will be reviewed by the store and, if approved, the order details will be sent to your Instagram.",
-    "paymentFailed": "Payment failed",
-    "paymentFailedDescription": "Your payment was not completed or was cancelled. Any deducted amount will be refunded within a few minutes.",
-    "refId": "Payment gateway tracking code",
-    "refIdCopied": "Tracking code copied",
-    "orderInvalid": "Your order has expired or has been paid.",
-    "invalidEmail": "Invalid email",
-    "selectGender": "Select an option",
-    "orderSubmitSuccessFull": "Your order has been successfully registered. It will be sent after approval.",
-    "OrderSubmitted": {
-      "title": "Your order has been registered",
-      "description": "After approval, the order status will be sent to you."
-    },
-    "UnAuthorized": {
-      "accessDenied": "Your time has expired. Please try again via the order button on Instagram."
-    },
-    "CustomerAddress": {
-      "state": {
-        "Errors": {
-          "required": "Please select a state"
-        }
-      },
-      "cityId": {
-        "Errors": {
-          "required": "Please select a city"
-        }
-      }
-    },
-    "Errors": {
-      "postalcode": {
-        "invalid_type": "Postal code must be 10 digits",
-        "required": "This field is required",
-        "too_small": "Postal code must be 10 digits"
-      }
-    },
-    "payWithZarinpal": "Pay with Zarinpal"
-  },
   "Settings": {
     "dashboard": "Dashboard",
     "title": "Settings",
